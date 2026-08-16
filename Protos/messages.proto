@@ -1,0 +1,223 @@
+syntax = "proto3";
+
+package GameNetwork;
+
+// ============================================
+// 消息ID枚举（用于标识消息类型）
+// ============================================
+enum MsgID {
+    MSG_NONE = 0;              // 无效消息
+    
+    // === 心跳相关 (1-9) ===
+    C2S_HeartBeat = 1;         // 客户端 → 服务端：心跳请求
+    S2C_HeartBeat = 2;         // 服务端 → 客户端：心跳响应
+    
+    // === 房间管理 (10-29) ===
+    C2S_CreateRoom = 10;       // 客户端 → 服务端：创建房间
+    S2C_CreateRoom = 11;       // 服务端 → 客户端：创建房间结果
+    C2S_JoinRoom = 12;         // 客户端 → 服务端：加入房间
+    S2C_JoinRoom = 13;         // 服务端 → 客户端：加入房间结果
+    C2S_LeaveRoom = 14;        // 客户端 → 服务端：离开房间
+    S2C_LeaveRoom = 15;        // 服务端 → 客户端：离开房间结果
+    C2S_GetRoomList = 16;      // 客户端 → 服务端：获取房间列表
+    S2C_RoomList = 17;         // 服务端 → 客户端：房间列表
+    S2C_PlayerJoin = 18;       // 服务端 → 客户端广播：有玩家加入
+    S2C_PlayerLeave = 19;      // 服务端 → 客户端广播：有玩家离开
+    C2S_StartGame = 20;        // 客户端 → 服务端：房主开始游戏
+    
+    // === 帧同步相关 (30-49) ===
+    C2S_PlayerInput = 30;      // 客户端 → 服务端：玩家输入
+    S2C_FrameState = 31;       // 服务端 → 客户端：帧状态同步（包含所有玩家输入）
+    
+    // === 游戏事件 (50-69) ===
+    S2C_GameStart = 50;        // 服务端 → 客户端：游戏开始
+    S2C_GameOver = 51;         // 服务端 → 客户端：游戏结束
+}
+
+// ============================================
+// 心跳消息
+// ============================================
+
+// 心跳请求（客户端发送）
+message HeartBeatReq {
+    int64 timestamp = 1;        // 客户端时间戳
+}
+
+// 心跳响应（服务端返回）
+message HeartBeatResp {
+    int64 server_time = 1;      // 服务器时间戳
+    int64 client_time = 2;      // 回显客户端时间戳（用于计算延迟）
+}
+
+// ============================================
+// 房间管理消息
+// ============================================
+
+// 创建房间请求
+message CreateRoomReq {
+    string room_name = 1;        // 房间名称（可选）
+    string password = 2;         // 密码（可选，空则无密码）
+    string room_id = 3;          // 房间ID（可选，空则服务端自动生成）
+}
+
+// 创建房间响应
+message CreateRoomResp {
+    bool success = 1;            // 是否成功
+    string room_id = 2;          // 房间ID（成功时返回）
+    string message = 3;          // 错误信息（失败时返回）
+    string player_id = 4;        // 本玩家的ID（服务端分配，用于帧同步对齐）
+}
+
+// 加入房间请求
+message JoinRoomReq {
+    string room_id = 1;          // 房间ID
+    string password = 2;         // 密码（如果有）
+}
+
+// 加入房间响应
+message JoinRoomResp {
+    bool success = 1;            // 是否成功
+    string room_id = 2;          // 房间ID
+    RoomInfo room_info = 3;      // 房间信息（成功时返回）
+    string message = 4;          // 错误信息
+    string player_id = 5;        // 本玩家的ID（服务端分配，用于帧同步对齐）
+}
+
+// 离开房间请求
+message LeaveRoomReq {
+    string room_id = 1;          // 房间ID
+}
+
+// 离开房间响应
+message LeaveRoomResp {
+    bool success = 1;            // 是否成功
+    string message = 2;          // 信息
+}
+
+// 获取房间列表请求
+message GetRoomListReq {
+    // 无需参数，可扩展分页等
+}
+
+// 房间列表响应
+message RoomListResp {
+    repeated RoomInfo rooms = 1; // 房间列表
+}
+
+// 玩家加入广播（通知房间内其他玩家）
+message PlayerJoinNotify {
+    PlayerInfo player = 1;       // 加入的玩家信息
+}
+
+// 玩家离开广播
+message PlayerLeaveNotify {
+    string player_id = 1;        // 离开的玩家ID
+}
+
+// ============================================
+// 数据结构定义
+// ============================================
+
+// 房间信息
+message RoomInfo {
+    string room_id = 1;          // 房间唯一ID
+    string room_name = 2;        // 房间名称
+    string host_id = 3;          // 房主ID
+    int32 max_players = 4;       // 最大人数
+    int32 current_players = 5;   // 当前人数
+    bool has_password = 6;       // 是否有密码
+    bool is_playing = 7;         // 是否正在游戏中
+    repeated PlayerInfo players = 8; // 房间内玩家列表
+}
+
+// 玩家信息
+message PlayerInfo {
+    string player_id = 1;        // 玩家唯一ID
+    string player_name = 2;      // 玩家名称
+    bool is_ready = 3;           // 是否准备
+}
+
+// ============================================
+// 帧同步消息
+// ============================================
+
+// 玩家输入（客户端每帧发送）
+message PlayerInputReq {
+    uint32 frame_id = 1;         // 帧ID（客户端预测的帧号）
+    
+    // 移动输入
+    float move_x = 2;            // 水平方向 (-1 到 1)
+    float move_y = 3;            // 垂直方向 (-1 到 1)
+    
+    // 操作输入
+    bool is_sprinting = 4;       // 是否冲刺
+    bool is_aiming = 5;          // 是否瞄准
+    
+    // 动作输入
+    bool fire = 6;               // 开火
+    bool reload = 7;             // 换弹
+    bool jump = 8;               // 跳跃
+    bool interact = 9;           // 交互（拾取物品等）
+    
+    // 视角旋转（用于瞄准方向）
+    float rotation = 10;          // 角度（弧度）
+    
+    // 额外数据（预留扩展）
+    map<string, string> extra_data = 99;
+}
+
+// 帧状态同步（服务端每帧广播给所有玩家）
+message FrameStateResp {
+    uint32 frame_id = 1;         // 当前帧ID
+    int64 server_time = 2;       // 服务器时间戳
+    
+    // 所有玩家的输入（key=player_id, value=input）
+    map<string, PlayerInput> player_inputs = 3;
+    
+    // 游戏事件（如击杀、拾取等，可扩展）
+    repeated GameEvent events = 4;
+}
+
+// 单个玩家的输入（用于帧状态中）
+message PlayerInput {
+    string player_id = 1;        // 玩家ID
+    float move_x = 2;
+    float move_y = 3;
+    bool is_sprinting = 4;
+    bool is_aiming = 5;
+    bool fire = 6;
+    bool reload = 7;
+    bool jump = 8;
+    bool interact = 9;
+    float rotation = 10;
+}
+
+// 游戏事件（预留）
+message GameEvent {
+    int32 event_type = 1;        // 事件类型
+    string source_player = 2;    // 事件发起者
+    string target_player = 3;    // 事件目标（可选）
+    map<string, string> data = 4; // 事件数据
+}
+
+// ============================================
+// 游戏控制消息
+// ============================================
+
+// 开始游戏请求（房主发起）
+message StartGameReq {
+    // 无需参数，服务端根据玩家定位其所在房间
+}
+
+// 游戏开始通知
+message GameStartNotify {
+    string room_id = 1;          // 房间ID
+    int64 start_time = 2;        // 开始时间戳
+}
+
+// 游戏结束通知
+message GameOverNotify {
+    string room_id = 1;          // 房间ID
+    string winner_id = 2;        // 获胜者/队伍（可扩展）
+    int32 reason = 3;            // 结束原因
+}
