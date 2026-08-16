@@ -111,7 +111,7 @@ namespace Server_MyDemo.Server
         }
 
         /// <summary>
-        /// 获取在线玩家数量
+        /// 获取在线玩家数量（仅统计已登录认证的玩家）
         /// </summary>
         public int OnlineCount => _players.Count;
 
@@ -122,6 +122,31 @@ namespace Server_MyDemo.Server
         {
             _players.TryGetValue(playerId, out var endpoint);
             return endpoint;
+        }
+
+        /// <summary>
+        /// 添加已认证的玩家（登录成功后调用）
+        /// </summary>
+        /// <param name="playerId">玩家唯一ID（UserId）</param>
+        /// <param name="endpoint">玩家网络端点</param>
+        public void AddPlayer(string playerId, IPEndPoint endpoint)
+        {
+            _players[playerId] = endpoint;
+            Console.WriteLine($"[NetworkServer] ✅ 玩家上线: {playerId} ({endpoint})");
+            Console.WriteLine($"[NetworkServer] 📊 当前在线: {_players.Count} 人");
+        }
+
+        /// <summary>
+        /// 移除玩家（登出或断开连接时调用）
+        /// </summary>
+        /// <param name="playerId">玩家唯一ID</param>
+        public void RemovePlayer(string playerId)
+        {
+            if (_players.Remove(playerId))
+            {
+                Console.WriteLine($"[NetworkServer] 👋 玩家离线: {playerId}");
+                Console.WriteLine($"[NetworkServer] 📊 当前在线: {_players.Count} 人");
+            }
         }
 
         #endregion
@@ -214,15 +239,7 @@ namespace Server_MyDemo.Server
                 byte[] payload = new byte[length];
                 Buffer.BlockCopy(data, 8, payload, 0, length);
 
-                // 记录玩家连接
-                string playerId = $"{endpoint.Address}:{endpoint.Port}";
-                if (!_players.ContainsKey(playerId))
-                {
-                    _players[playerId] = endpoint;
-                    Console.WriteLine($"[NetworkServer] 新连接: {playerId}");
-                }
-
-                // 触发消息回调
+                // 触发消息回调（不再自动添加玩家，由GameServer在登录成功后添加）
                 OnMessageReceived?.Invoke(endpoint, payload, (MsgID)msgId);
             }
             catch (Exception ex)

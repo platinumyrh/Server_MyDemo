@@ -4,6 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
+using System.Security.Cryptography;  // 🔧 修复 CS0103: RandomNumberGenerator 所在命名空间
 using GameNetwork;  // 添加 Protobuf 命名空间
 using Google.Protobuf; // 添加 Google.Protobuf 命名空间
 
@@ -17,9 +18,10 @@ namespace Server_MyDemo.Server
     {
         #region 私有字段
 
-        private NetworkServer _networkServer;      // 网络层
+        private NetworkServer? _networkServer;      // 🔧 修复 CS8618: 允许为 null（Start() 中初始化）
         private RoomManager _roomManager;           // 房间管理器
         private FrameSyncManager _frameSyncManager; // 帧同步管理器
+        private AuthService _authService;           // 认证服务（用户登录验证）
         private bool _isRunning;                    // 服务器运行状态
 
         // 配置参数
@@ -35,11 +37,25 @@ namespace Server_MyDemo.Server
         public GameServer()
         {
             _roomManager = new RoomManager();
-            _frameSyncManager = new FrameSyncManager(FRAME_RATE);
+            _frameSyncManager = new FrameSyncManager(FRAME_RATE);  // 🔧 修复拼写错误：FRATE → FRAME_RATE
+            
+            // 🔧 修复：使用项目根目录（.csproj 所在目录）作为数据目录
+            // 避免 bin/Debug/net8.0/ 和项目根目录之间的路径混乱
+            string projectDirectory = FindProjectDirectory();
+            string dataPath = Path.Combine(projectDirectory, "Data", "users.json");
+            
+            Console.WriteLine($"[GameServer] 📂 项目根目录: {projectDirectory}");
+            Console.WriteLine($"[GameServer] 📂 用户数据文件路径: {dataPath}");
+            Console.WriteLine($"[GameServer] 📂 文件是否存在: {File.Exists(dataPath)}");
+            
+            _authService = new AuthService(dataPath);   // 使用项目根目录的绝对路径
+            
+            _networkServer = null;                   // 🔧 修复 CS8618: 初始化为 null（Start() 中会赋值）
             _isRunning = false;
 
             Console.WriteLine($"[GameServer] 初始化完成");
             Console.WriteLine($"[GameServer] 端口: {SERVER_PORT}, 帧率: {FRAME_RATE}fps, 最大玩家数: {MAX_PLAYERS}");
+            Console.WriteLine($"[GameServer] 已加载 {_authService.GetUserCount()} 个用户账号");
         }
 
         #endregion
@@ -123,6 +139,11 @@ namespace Server_MyDemo.Server
             {
                 switch (msgId)
                 {
+                    // === 登录认证消息 ===
+                    case MsgID.C2SLogin:
+                        HandleLogin(clientEndpoint, data);
+                        break;
+
                     // === 心跳消息 ===
                     case MsgID.C2SHeartBeat:
                         HandleHeartBeat(clientEndpoint, data);
@@ -158,6 +179,87 @@ namespace Server_MyDemo.Server
             catch (Exception ex)
             {
                 Console.WriteLine($"[GameServer] ❌ 消息处理异常 [{msgId}]: {ex.Message}");
+            }
+        }
+
+        #endregion
+
+        #region 消息处理器 - 登录认证
+
+        /// <summary>
+        /// 处理登录请求
+        /// </summary>
+        private void HandleLogin(IPEndPoint client, byte[] data)
+        {
+            try
+            {
+                var req = LoginReq.Parser.ParseFrom(data);
+
+                Console.WriteLine($"[GameServer] 收到登录请求: {req.Username}");
+
+                // 调用认证服务验证用户
+                var result = _authService.ValidateLogin(req.Username, req.Password);
+
+                if (result.Success && result.User != null)
+                {
+                    // 🔑 生成会话Token
+                    string token = GenerateSessionToken(result.User.UserId);
+
+                    // 🔑 登录成功后才添加到在线玩家列表
+                    _networkServer.AddPlayer(result.User.UserId, client);
+
+                    // 构建成功响应
+                    var resp = new LoginResp
+                    {
+                        Success = true,
+                        UserId = result.User.UserId,          // 👈 关键！返回给客户端的用户唯一ID
+                        Username = result.User.Nickname,       // 返回昵称
+                        Token = token,
+                        ExpireTime = DateTimeOffset.UtcNow.AddHours(24).ToUnixTimeMilliseconds(),
+                        Message = "登录成功"
+                    };
+
+                    _networkServer.Send(client, MsgID.S2CLogin, resp);
+
+                    Console.WriteLine($"[GameServer] ✅ [{req.Username}] 登录成功，ID: {result.User.UserId}");
+                }
+                else
+                {
+                    // 构建失败响应
+                    var resp = new LoginResp
+                    {
+                        Success = false,
+                        Message = result.Message ?? "登录失败"
+                    };
+
+                    _networkServer.Send(client, MsgID.S2CLogin, resp);
+
+                    Console.WriteLine($"[GameServer] ❌ [{req.Username}] 登录失败: {result.Message}");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameServer] ❌ 登录处理异常: {ex.Message}");
+
+                var errorResp = new LoginResp
+                {
+                    Success = false,
+                    Message = "服务器内部错误"
+                };
+                _networkServer.Send(client, MsgID.S2CLogin, errorResp);
+            }
+        }
+
+        /// <summary>
+        /// 生成会话令牌（随机32字节Base64）
+        /// </summary>
+        private static string GenerateSessionToken(string userId)
+        {
+            using (var rng = RandomNumberGenerator.Create())
+            {
+                byte[] bytes = new byte[32];
+                rng.GetBytes(bytes);
+                return Convert.ToBase64String(bytes);
             }
         }
 
@@ -389,6 +491,44 @@ namespace Server_MyDemo.Server
                     }
                 }
             }
+        }
+
+        #endregion
+
+        #region 私有方法 - 路径工具
+
+        /// <summary>
+        /// 查找项目根目录（包含 .csproj 文件的目录）
+        /// 从当前运行目录向上回溯，直到找到 .csproj 文件
+        /// </summary>
+        /// <returns>项目根目录绝对路径</returns>
+        private static string FindProjectDirectory()
+        {
+            // 从当前运行目录开始（通常是 bin/Debug/net8.0/）
+            string currentDir = AppDomain.CurrentDomain.BaseDirectory;
+            
+            // 向上回溯最多5层，查找包含 .csproj 文件的目录
+            for (int i = 0; i < 5; i++)
+            {
+                // 检查当前目录是否有 .csproj 文件
+                string[] csprojFiles = Directory.GetFiles(currentDir, "*.csproj");
+                if (csprojFiles.Length > 0)
+                {
+                    return currentDir;
+                }
+                
+                // 检查父目录
+                string? parentDir = Directory.GetParent(currentDir)?.FullName;
+                if (string.IsNullOrEmpty(parentDir))
+                {
+                    break;
+                }
+                currentDir = parentDir;
+            }
+            
+            // 如果找不到项目目录，回退到运行目录
+            Console.WriteLine("[GameServer] ⚠️ 无法找到项目根目录（.csproj），使用运行目录");
+            return AppDomain.CurrentDomain.BaseDirectory;
         }
 
         #endregion

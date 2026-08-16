@@ -32,6 +32,10 @@ enum MsgID {
     // === 游戏事件 (50-69) ===
     S2C_GameStart = 50;        // 服务端 → 客户端：游戏开始
     S2C_GameOver = 51;         // 服务端 → 客户端：游戏结束
+    
+    // === 登录认证 (70-79) ===
+    C2S_Login = 70;            // 客户端 → 服务端：登录请求
+    S2C_Login = 71;            // 服务端 → 客户端：登录响应
 }
 
 // ============================================
@@ -220,4 +224,24 @@ message GameOverNotify {
     string room_id = 1;          // 房间ID
     string winner_id = 2;        // 获胜者/队伍（可扩展）
     int32 reason = 3;            // 结束原因
+}
+
+// ============================================
+// 登录认证消息
+// ============================================
+
+// 登录请求（客户端发送）
+message LoginReq {
+    string username = 1;         // 用户名
+    string password = 2;         // 密码（明文，服务端会进行MD5哈希验证）
+}
+
+// 登录响应（服务端返回）
+message LoginResp {
+    bool success = 1;            // 是否成功
+    string user_id = 2;          // 用户唯一ID（关键！客户端保存此字段用于后续操作）
+    string username = 3;          // 显示名称/昵称
+    string token = 4;            // 会话令牌（后续请求携带用于身份验证）
+    int64 expire_time = 5;       // 令牌过期时间戳（Unix时间戳毫秒）
+    string message = 6;          // 错误信息（失败时返回）
 }

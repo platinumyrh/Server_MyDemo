@@ -1,0 +1,13 @@
+﻿{
+  "users": [
+    {
+      "username": "test",
+      "password": "e10adc3949ba59abbe56e057f20f883e",
+      "user_id": "user_001",
+      "nickname": "测试用户",
+      "create_time": "2026-01-01T00:00:00Z",
+      "last_login": "2026-08-16T07:44:16Z"
+    }
+  ],
+  "version": "1.0"
+}
