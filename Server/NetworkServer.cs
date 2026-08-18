@@ -149,6 +149,16 @@ namespace Server_MyDemo.Server
             }
         }
 
+        /// <summary>
+        /// 检查玩家是否已在线
+        /// </summary>
+        /// <param name="playerId">玩家唯一ID</param>
+        /// <returns>是否在线</returns>
+        public bool IsPlayerOnline(string playerId)
+        {
+            return _players.ContainsKey(playerId);
+        }
+
         #endregion
 
         #region 私有方法 - 接收数据

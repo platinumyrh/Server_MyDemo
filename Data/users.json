@@ -6,7 +6,39 @@
       "user_id": "user_001",
       "nickname": "测试用户",
       "create_time": "2026-01-01T00:00:00Z",
-      "last_login": "2026-08-16T07:44:16Z"
+      "last_login": "2026-08-18T02:41:38Z"
+    },
+    {
+      "username": "alice",
+      "password": "e99a18c428cb38d5f260853678922e03",
+      "user_id": "user_002",
+      "nickname": "爱丽丝",
+      "create_time": "2026-01-02T00:00:00Z",
+      "last_login": "2026-08-18T02:41:26Z"
+    },
+    {
+      "username": "bob",
+      "password": "5f4dcc3b5aa765d61d8327deb882cf99",
+      "user_id": "user_003",
+      "nickname": "鲍勃",
+      "create_time": "2026-01-03T00:00:00Z",
+      "last_login": "2026-08-18T02:43:06Z"
+    },
+    {
+      "username": "charlie",
+      "password": "d8578edf8458ce06fbc5bb76a58c5ca4",
+      "user_id": "user_004",
+      "nickname": "查理",
+      "create_time": "2026-01-04T00:00:00Z",
+      "last_login": null
+    },
+    {
+      "username": "dave",
+      "password": "e10adc3949ba59abbe56e057f20f883e",
+      "user_id": "user_005",
+      "nickname": "戴夫",
+      "create_time": "2026-01-05T00:00:00Z",
+      "last_login": null
     }
   ],
   "version": "1.0"

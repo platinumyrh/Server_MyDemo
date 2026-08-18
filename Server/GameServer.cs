@@ -202,6 +202,19 @@ namespace Server_MyDemo.Server
 
                 if (result.Success && result.User != null)
                 {
+                    // 🔑 检查是否重复登录
+                    if (_networkServer.IsPlayerOnline(result.User.UserId))
+                    {
+                        var duplicateResp = new LoginResp
+                        {
+                            Success = false,
+                            Message = "该账号已在线，请勿重复登录"
+                        };
+                        _networkServer.Send(client, MsgID.S2CLogin, duplicateResp);
+                        Console.WriteLine($"[GameServer] ❌ [{req.Username}] 重复登录被拒绝");
+                        return;
+                    }
+
                     // 🔑 生成会话Token
                     string token = GenerateSessionToken(result.User.UserId);
 
