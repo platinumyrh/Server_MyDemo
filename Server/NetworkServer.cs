@@ -125,6 +125,23 @@ namespace Server_MyDemo.Server
         }
 
         /// <summary>
+        /// 根据连接端点反查已认证的玩家ID（登录成功后由AddPlayer登记）
+        /// </summary>
+        public bool TryGetPlayerId(IPEndPoint endpoint, out string playerId)
+        {
+            foreach (var kvp in _players)
+            {
+                if (kvp.Value.Equals(endpoint))
+                {
+                    playerId = kvp.Key;
+                    return true;
+                }
+            }
+            playerId = "";
+            return false;
+        }
+
+        /// <summary>
         /// 添加已认证的玩家（登录成功后调用）
         /// </summary>
         /// <param name="playerId">玩家唯一ID（UserId）</param>

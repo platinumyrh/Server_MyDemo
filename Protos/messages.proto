@@ -165,19 +165,37 @@ message PlayerInputReq {
     
     // 视角旋转（用于瞄准方向）
     float rotation = 10;          // 角度（弧度）
-    
+
+    // 发送方的权威位置状态（本地 CharacterController 物理后的真实位置，
+    // 服务端原样持有并广播给其他玩家做位置纠正）
+    float pos_x = 11;             // 位置 X
+    float pos_y = 12;             // 位置 Y
+    float pos_z = 13;             // 位置 Z
+    float rot_y = 14;             // 朝向（角度，度）
+
     // 额外数据（预留扩展）
     map<string, string> extra_data = 99;
+}
+
+// 玩家位置状态（服务端随帧广播）
+message PlayerState {
+    float pos_x = 1;             // 位置 X
+    float pos_y = 2;             // 位置 Y
+    float pos_z = 3;             // 位置 Z
+    float rot_y = 4;             // 朝向（角度，度）
 }
 
 // 帧状态同步（服务端每帧广播给所有玩家）
 message FrameStateResp {
     uint32 frame_id = 1;         // 当前帧ID
     int64 server_time = 2;       // 服务器时间戳
-    
+
     // 所有玩家的输入（key=player_id, value=input）
     map<string, PlayerInput> player_inputs = 3;
-    
+
+    // 所有玩家的位置状态（key=player_id, value=state）
+    map<string, PlayerState> player_states = 5;
+
     // 游戏事件（如击杀、拾取等，可扩展）
     repeated GameEvent events = 4;
 }

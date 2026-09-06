@@ -23,6 +23,12 @@ namespace Server_MyDemo.Utils
         
         // 输入缓冲区（playerId -> 本帧输入）
         private Dictionary<string, PlayerInputReq> _inputBuffer;
+
+        // 玩家位置状态（playerId -> 最近一次上报的权威位置）
+        // 位置由各客户端自己物理模拟（含 CharacterController 碰撞结果）后随输入上报，
+        // 服务端只持有和广播：hold-last 语义，未收到新状态时沿用旧值，
+        // 保证帧广播里始终有全房间的最新位置
+        private Dictionary<string, PlayerState> _playerStates;
         
         // 引用（不拥有）
         private RoomManager? _roomManager;
@@ -43,6 +49,7 @@ namespace Server_MyDemo.Utils
             _currentFrameId = 0;
             _isRunning = false;
             _inputBuffer = new Dictionary<string, PlayerInputReq>();
+            _playerStates = new Dictionary<string, PlayerState>();
             _stopwatch = new Stopwatch();
 
             Console.WriteLine($"[FrameSync] 初始化完成，帧率: {_frameRate}fps，间隔: {_frameIntervalMs}ms");
@@ -87,13 +94,25 @@ namespace Server_MyDemo.Utils
         }
 
         /// <summary>
-        /// 添加玩家输入
+        /// 添加玩家输入（输入和该玩家的权威位置状态一起上报）
         /// </summary>
         public void AddPlayerInput(string playerId, PlayerInputReq input)
         {
             lock (_inputBuffer)
             {
                 _inputBuffer[playerId] = input;
+            }
+
+            // 更新该玩家的权威位置状态（hold-last）
+            lock (_playerStates)
+            {
+                _playerStates[playerId] = new PlayerState
+                {
+                    PosX = input.PosX,
+                    PosY = input.PosY,
+                    PosZ = input.PosZ,
+                    RotY = input.RotY
+                };
             }
         }
 
@@ -143,13 +162,22 @@ namespace Server_MyDemo.Utils
                     frameState.PlayerInputs[input.Key] = input.Value;
                 }
 
+                // 附加全房间的最新位置状态（hold-last，不随帧清空）
+                lock (_playerStates)
+                {
+                    foreach (var kvp in _playerStates)
+                    {
+                        frameState.PlayerStates[kvp.Key] = kvp.Value;
+                    }
+                }
+
                 // 广播给所有在房间中的玩家
                 BroadcastToAllRooms(frameState);
 
                 // 调试输出（每100帧输出一次）
                 if (_currentFrameId % 100 == 0)
                 {
-                    Console.WriteLine($"[FrameSync] 帧 {_currentFrameId}, 在线输入: {allInputs.Count}");
+                    Console.WriteLine($"[FrameSync] 帧 {_currentFrameId}, 在线输入: {allInputs.Count}, 位置状态: {_playerStates.Count}");
                 }
             }
             catch (Exception ex)

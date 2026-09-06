@@ -1,4 +1,4 @@
-using Server_MyDemo.Models;
+﻿using Server_MyDemo.Models;
 using Server_MyDemo.Utils;
 using System;
 using System.Collections.Generic;
@@ -268,7 +268,7 @@ namespace Server_MyDemo.Server
         /// </summary>
         private static string GenerateSessionToken(string userId)
         {
-            using (var rng = RandomNumberGenerator.Create())
+            using (var rng = RandomNumberGenerator.Create())    
             {
                 byte[] bytes = new byte[32];
                 rng.GetBytes(bytes);
@@ -396,7 +396,15 @@ namespace Server_MyDemo.Server
 
             // 将输入提交给帧同步管理器
             _frameSyncManager.AddPlayerInput(playerId, req);
+
+            // 探针：每60个输入打一行，确认输入链路是否到达服务端
+            if (++_inputProbeCount % 60 == 1)
+            {
+                Console.WriteLine($"[GameServer] 🎮 收到玩家输入 #{_inputProbeCount}，来自 [{playerId}]，Move({req.MoveX:F2},{req.MoveY:F2})");
+            }
         }
+
+        private int _inputProbeCount = 0;
 
         private void HandleStartGame(IPEndPoint client)
         {
@@ -442,10 +450,18 @@ namespace Server_MyDemo.Server
         #region 辅助方法
 
         /// <summary>
-        /// 获取或创建玩家（根据IP和端口识别）
+        /// 获取或创建玩家标识
+        /// 优先使用登录认证时分配的 UserId（如 user_001，已由 AddPlayer 登记端点映射），
+        /// 未登录的连接才退回用 IP:端口 字符串标识。
+        /// 注意：房间成员、帧同步广播全部以此为键，必须与 NetworkServer._players 的键一致，
+        /// 否则 GetPlayerEndpoint 反查不到连接，广播会静默丢失
         /// </summary>
         private string GetOrCreatePlayer(IPEndPoint client)
         {
+            if (_networkServer.TryGetPlayerId(client, out var userId))
+            {
+                return userId;
+            }
             return $"{client.Address}:{client.Port}";
         }
 
