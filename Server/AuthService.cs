@@ -47,7 +47,7 @@ namespace Server_MyDemo.Server
             public string CreateTime { get; set; } = "";
 
             [JsonPropertyName("last_login")]
-            public string LastLogin { get; set; } = null;
+            public string LastLogin { get; set; } = string.Empty;
 
             // 运行时字段（不序列化到JSON）
             [JsonIgnore]
@@ -59,7 +59,7 @@ namespace Server_MyDemo.Server
         #region 私有字段
 
         private readonly string _dataFilePath;
-        private UserData? _userData;  // 🔧 修复 CS8618: 允许为 null（Load() 方法中会初始化）
+        private UserData _userData = new UserData();   // 永不为 null；Load() 失败时保持空库
         private readonly object _lock = new object();
 
         #endregion
@@ -118,26 +118,20 @@ namespace Server_MyDemo.Server
                     Console.WriteLine($"[AuthService] 📄 JSON内容长度: {json.Length} 字符");
                     Console.WriteLine($"[AuthService] 📄 JSON前100字符: {json.Substring(0, Math.Min(100, json.Length))}...");
                     
-                    _userData = JsonSerializer.Deserialize<UserData>(json, new JsonSerializerOptions
+                    var loaded = JsonSerializer.Deserialize<UserData>(json, new JsonSerializerOptions
                     {
                         PropertyNameCaseInsensitive = true
                     });
 
-                    Console.WriteLine($"[AuthService] 🔍 反序列化结果: _userData = {(_userData != null ? "非null" : "null")}");
-                    
-                    if (_userData != null)
-                    {
-                        Console.WriteLine($"[AuthService] 🔍 Users集合: {(_userData.Users != null ? $"非null, 数量={_userData.Users.Count}" : "null")}");
-                    }
-
-                    // 🔧 修复 CS8601: 添加 null 检查
-                    if (_userData == null || _userData.Users == null || _userData.Users.Count == 0)
+                    if (loaded == null || loaded.Users == null || loaded.Users.Count == 0)
                     {
                         Console.WriteLine("[AuthService] ⚠️ 用户数据为空或Users集合为空，创建新的数据库");
                         _userData = new UserData();
                         Save();
                         return;
                     }
+
+                    _userData = loaded;
 
                     // 对所有用户的密码进行MD5哈希（安全处理）
                     foreach (var user in _userData.Users)
@@ -192,13 +186,6 @@ namespace Server_MyDemo.Server
                     if (!string.IsNullOrEmpty(dir) && !Directory.Exists(dir))
                     {
                         Directory.CreateDirectory(dir);
-                    }
-
-                    // 🔧 修复 CS8618: 添加 null 检查
-                    if (_userData == null)
-                    {
-                        Console.WriteLine("[AuthService] ⚠️ 用户数据为空，无法保存");
-                        return;
                     }
 
                     // 🔑 关键：保存前恢复明文密码到 Password 字段

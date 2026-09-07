@@ -6,7 +6,7 @@
       "user_id": "user_001",
       "nickname": "测试用户",
       "create_time": "2026-01-01T00:00:00Z",
-      "last_login": "2026-09-06T06:04:42Z"
+      "last_login": "2026-09-07T10:28:06Z"
     },
     {
       "username": "alice",
@@ -14,7 +14,7 @@
       "user_id": "user_002",
       "nickname": "爱丽丝",
       "create_time": "2026-01-02T00:00:00Z",
-      "last_login": "2026-09-06T06:04:52Z"
+      "last_login": "2026-09-07T10:28:13Z"
     },
     {
       "username": "bob",

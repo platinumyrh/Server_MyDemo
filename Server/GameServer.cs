@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Net;
 using System.Net.Sockets;
-using System.Security.Cryptography;  // 🔧 修复 CS0103: RandomNumberGenerator 所在命名空间
+using System.Security.Cryptography;  // RandomNumberGenerator 所在命名空间
 using GameNetwork;  // 添加 Protobuf 命名空间
 using Google.Protobuf; // 添加 Google.Protobuf 命名空间
 
@@ -18,17 +18,23 @@ namespace Server_MyDemo.Server
     {
         #region 私有字段
 
-        private NetworkServer? _networkServer;      // 🔧 修复 CS8618: 允许为 null（Start() 中初始化）
+        private NetworkServer _networkServer;       // 网络层（构造函数中创建，Start() 中开始监听）
         private RoomManager _roomManager;           // 房间管理器
         private FrameSyncManager _frameSyncManager; // 帧同步管理器
         private AuthService _authService;           // 认证服务（用户登录验证）
         private bool _isRunning;                    // 服务器运行状态
 
+        // 心跳超时检测定时器（UDP 无连接，客户端强退时只能靠超时发现）
+        private System.Threading.Timer? _timeoutTimer;
+
         // 配置参数
         private const int SERVER_PORT = 7777;       // 服务器端口
         private const int MAX_PLAYERS = 20;         // 最大在线玩家数
-        private const int FRAME_RATE = 30;          // 帧率（30fps）
+        private const int FRAME_RATE = 60;          // 帧率（30fps）
         private const int FRAME_INTERVAL_MS = 1000 / FRAME_RATE; // 帧间隔（33ms）
+
+        private const int HEARTBEAT_TIMEOUT_SEC = 15;      // 超过该时长无任何消息则判定掉线
+        private const int TIMEOUT_CHECK_INTERVAL_MS = 5000; // 超时扫描间隔
 
         #endregion
 
@@ -37,24 +43,25 @@ namespace Server_MyDemo.Server
         public GameServer()
         {
             _roomManager = new RoomManager();
-            _frameSyncManager = new FrameSyncManager(FRAME_RATE);  // 🔧 修复拼写错误：FRATE → FRAME_RATE
-            
+            _frameSyncManager = new FrameSyncManager(FRAME_RATE);
+
             // 🔧 修复：使用项目根目录（.csproj 所在目录）作为数据目录
             // 避免 bin/Debug/net8.0/ 和项目根目录之间的路径混乱
             string projectDirectory = FindProjectDirectory();
             string dataPath = Path.Combine(projectDirectory, "Data", "users.json");
-            
+
             Console.WriteLine($"[GameServer] 📂 项目根目录: {projectDirectory}");
             Console.WriteLine($"[GameServer] 📂 用户数据文件路径: {dataPath}");
             Console.WriteLine($"[GameServer] 📂 文件是否存在: {File.Exists(dataPath)}");
-            
+
             _authService = new AuthService(dataPath);   // 使用项目根目录的绝对路径
-            
-            _networkServer = null;                   // 🔧 修复 CS8618: 初始化为 null（Start() 中会赋值）
+
+            _networkServer = new NetworkServer(SERVER_PORT);
             _isRunning = false;
 
             Console.WriteLine($"[GameServer] 初始化完成");
             Console.WriteLine($"[GameServer] 端口: {SERVER_PORT}, 帧率: {FRAME_RATE}fps, 最大玩家数: {MAX_PLAYERS}");
+            Console.WriteLine($"[GameServer] 心跳超时: {HEARTBEAT_TIMEOUT_SEC}s, 扫描间隔: {TIMEOUT_CHECK_INTERVAL_MS}ms");
             Console.WriteLine($"[GameServer] 已加载 {_authService.GetUserCount()} 个用户账号");
         }
 
@@ -75,13 +82,19 @@ namespace Server_MyDemo.Server
 
             try
             {
-                // 初始化网络层
-                _networkServer = new NetworkServer(SERVER_PORT);
+                // 启动网络层
                 _networkServer.OnMessageReceived += HandleMessage;
                 _networkServer.Start();
 
                 // 启动帧同步循环
                 _frameSyncManager.Start(_roomManager, _networkServer);
+
+                // 启动心跳超时扫描
+                _timeoutTimer = new System.Threading.Timer(
+                    _ => CheckTimeouts(),
+                    null,
+                    TIMEOUT_CHECK_INTERVAL_MS,
+                    TIMEOUT_CHECK_INTERVAL_MS);
 
                 _isRunning = true;
                 Console.WriteLine("[GameServer] ✅ 服务器启动成功！");
@@ -103,8 +116,11 @@ namespace Server_MyDemo.Server
 
             try
             {
-                _frameSyncManager?.Stop();
-                _networkServer?.Stop();
+                _timeoutTimer?.Dispose();
+                _timeoutTimer = null;
+
+                _frameSyncManager.Stop();
+                _networkServer.Stop();
                 Console.WriteLine("[GameServer] 服务器已停止");
             }
             catch (Exception ex)
@@ -120,9 +136,9 @@ namespace Server_MyDemo.Server
         {
             Console.WriteLine("\n========== 服务器状态 ==========");
             Console.WriteLine($"运行状态: {(_isRunning ? "运行中" : "已停止")}");
-            Console.WriteLine($"在线玩家: {_networkServer?.OnlineCount ?? 0}");
+            Console.WriteLine($"在线玩家: {_networkServer.OnlineCount}");
             Console.WriteLine($"房间数量: {_roomManager.GetRoomCount()}");
-            Console.WriteLine($"当前帧ID: {_frameSyncManager?.CurrentFrameId ?? 0}");
+            Console.WriteLine($"当前帧ID: {_frameSyncManager.CurrentFrameId}");
             Console.WriteLine("==================================\n");
         }
 
@@ -137,6 +153,10 @@ namespace Server_MyDemo.Server
         {
             try
             {
+                // 任意消息都算活跃：刷新心跳时间
+                // 这样帧同步期间即使不发心跳包也不会被误判掉线
+                _networkServer.TouchPlayer(GetOrCreatePlayer(clientEndpoint));
+
                 switch (msgId)
                 {
                     // === 登录认证消息 ===
@@ -202,17 +222,13 @@ namespace Server_MyDemo.Server
 
                 if (result.Success && result.User != null)
                 {
-                    // 🔑 检查是否重复登录
+                    // 🔑 同账号已在别处在线：顶掉旧会话
+                    // 场景：Unity 停止播放 / 直接关掉打包程序，客户端来不及发登出，
+                    // 旧会话会一直占着在线表导致再也登不上。这里直接踢掉旧的放行新的
                     if (_networkServer.IsPlayerOnline(result.User.UserId))
                     {
-                        var duplicateResp = new LoginResp
-                        {
-                            Success = false,
-                            Message = "该账号已在线，请勿重复登录"
-                        };
-                        _networkServer.Send(client, MsgID.S2CLogin, duplicateResp);
-                        Console.WriteLine($"[GameServer] ❌ [{req.Username}] 重复登录被拒绝");
-                        return;
+                        Console.WriteLine($"[GameServer] ⚠️ [{req.Username}] 已在别处在线，踢掉旧会话");
+                        HandlePlayerDisconnect(result.User.UserId, "被新登录顶号");
                     }
 
                     // 🔑 生成会话Token
@@ -268,7 +284,7 @@ namespace Server_MyDemo.Server
         /// </summary>
         private static string GenerateSessionToken(string userId)
         {
-            using (var rng = RandomNumberGenerator.Create())    
+            using (var rng = RandomNumberGenerator.Create())
             {
                 byte[] bytes = new byte[32];
                 rng.GetBytes(bytes);
@@ -283,7 +299,7 @@ namespace Server_MyDemo.Server
         private void HandleHeartBeat(IPEndPoint client, byte[] data)
         {
             var req = HeartBeatReq.Parser.ParseFrom(data);
-            
+
             var resp = new HeartBeatResp
             {
                 ServerTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds(),
@@ -303,7 +319,7 @@ namespace Server_MyDemo.Server
 
             // 获取或创建玩家
             string playerId = GetOrCreatePlayer(client);
-            
+
             var result = _roomManager.CreateRoom(playerId, req.RoomName, req.Password, req.RoomId);
 
             var resp = new CreateRoomResp
@@ -371,6 +387,7 @@ namespace Server_MyDemo.Server
             {
                 // 广播给房间内其他玩家
                 BroadcastPlayerLeave(req.RoomId, playerId);
+                _frameSyncManager.RemovePlayerState(playerId);
                 Console.WriteLine($"[GameServer] 玩家 [{playerId}] 离开房间 [{req.RoomId}]");
             }
         }
@@ -394,17 +411,9 @@ namespace Server_MyDemo.Server
             var req = PlayerInputReq.Parser.ParseFrom(data);
             string playerId = GetOrCreatePlayer(client);
 
-            // 将输入提交给帧同步管理器
+            // 将输入提交给帧同步管理器（位置会在内部做速度校验）
             _frameSyncManager.AddPlayerInput(playerId, req);
-
-            // 探针：每60个输入打一行，确认输入链路是否到达服务端
-            if (++_inputProbeCount % 60 == 1)
-            {
-                Console.WriteLine($"[GameServer] 🎮 收到玩家输入 #{_inputProbeCount}，来自 [{playerId}]，Move({req.MoveX:F2},{req.MoveY:F2})");
-            }
         }
-
-        private int _inputProbeCount = 0;
 
         private void HandleStartGame(IPEndPoint client)
         {
@@ -447,13 +456,68 @@ namespace Server_MyDemo.Server
 
         #endregion
 
+        #region 私有方法 - 连接维护
+
+        /// <summary>
+        /// 扫描并清理心跳超时的玩家
+        /// UDP 是无连接的，客户端崩溃/强退不会通知服务端，只能靠超时发现
+        /// </summary>
+        private void CheckTimeouts()
+        {
+            if (!_isRunning) return;
+
+            try
+            {
+                var timedOut = _networkServer.GetTimedOutPlayers(TimeSpan.FromSeconds(HEARTBEAT_TIMEOUT_SEC));
+                foreach (var playerId in timedOut)
+                {
+                    HandlePlayerDisconnect(playerId, $"心跳超时 {HEARTBEAT_TIMEOUT_SEC}s");
+                }
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameServer] ❌ 超时检测异常: {ex.Message}");
+            }
+        }
+
+        /// <summary>
+        /// 统一处理玩家断开：退出房间 → 广播离开 → 清理帧同步状态 → 移除在线记录
+        /// </summary>
+        private void HandlePlayerDisconnect(string playerId, string reason)
+        {
+            try
+            {
+                // 1. 退出所在房间，并通知房间内其他人
+                string? roomId = _roomManager.GetPlayerRoomId(playerId);
+                if (!string.IsNullOrEmpty(roomId))
+                {
+                    _roomManager.LeaveRoom(playerId, roomId);
+                    BroadcastPlayerLeave(roomId, playerId);
+                }
+
+                // 2. 清理帧同步残留（输入缓冲、位置状态、校验记录）
+                _frameSyncManager.RemovePlayerState(playerId);
+
+                // 3. 从在线表移除（含端点反向索引）
+                _networkServer.RemovePlayer(playerId);
+
+                Console.WriteLine($"[GameServer] 👋 玩家 [{playerId}] 已断开：{reason}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[GameServer] ❌ 断开处理异常 [{playerId}]: {ex.Message}");
+            }
+        }
+
+        #endregion
+
         #region 辅助方法
 
         /// <summary>
         /// 获取或创建玩家标识
         /// 优先使用登录认证时分配的 UserId（如 user_001，已由 AddPlayer 登记端点映射），
         /// 未登录的连接才退回用 IP:端口 字符串标识。
-        /// 注意：房间成员、帧同步广播全部以此为键，必须与 NetworkServer._players 的键一致，
+        /// 注意：房间成员、帧同步广播全部以此为键，必须与 NetworkServer 在线表的键一致，
         /// 否则 GetPlayerEndpoint 反查不到连接，广播会静默丢失
         /// </summary>
         private string GetOrCreatePlayer(IPEndPoint client)
@@ -535,7 +599,7 @@ namespace Server_MyDemo.Server
         {
             // 从当前运行目录开始（通常是 bin/Debug/net8.0/）
             string currentDir = AppDomain.CurrentDomain.BaseDirectory;
-            
+
             // 向上回溯最多5层，查找包含 .csproj 文件的目录
             for (int i = 0; i < 5; i++)
             {
@@ -545,7 +609,7 @@ namespace Server_MyDemo.Server
                 {
                     return currentDir;
                 }
-                
+
                 // 检查父目录
                 string? parentDir = Directory.GetParent(currentDir)?.FullName;
                 if (string.IsNullOrEmpty(parentDir))
@@ -554,7 +618,7 @@ namespace Server_MyDemo.Server
                 }
                 currentDir = parentDir;
             }
-            
+
             // 如果找不到项目目录，回退到运行目录
             Console.WriteLine("[GameServer] ⚠️ 无法找到项目根目录（.csproj），使用运行目录");
             return AppDomain.CurrentDomain.BaseDirectory;
