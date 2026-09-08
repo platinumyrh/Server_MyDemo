@@ -36,6 +36,10 @@ enum MsgID {
     // === 登录认证 (70-79) ===
     C2S_Login = 70;            // 客户端 → 服务端：登录请求
     S2C_Login = 71;            // 服务端 → 客户端：登录响应
+
+    // === 战斗事件 (80-89) ===
+    C2S_FireEvent = 80;        // 客户端 → 服务端：开火事件上报（弹道+命中信息）
+    S2C_FireEvent = 81;        // 服务端 → 客户端：开火事件广播（房间内其他玩家）
 }
 
 // ============================================
@@ -183,6 +187,8 @@ message PlayerState {
     float pos_y = 2;             // 位置 Y
     float pos_z = 3;             // 位置 Z
     float rot_y = 4;             // 朝向（角度，度）
+    bool is_firing = 5;          // 正在开火（持续状态，随快照走）
+    bool is_reloading = 6;       // 换弹中（持续状态，随快照走）
 }
 
 // 帧状态同步（服务端每帧广播给所有玩家）
@@ -262,4 +268,58 @@ message LoginResp {
     string token = 4;            // 会话令牌（后续请求携带用于身份验证）
     int64 expire_time = 5;       // 令牌过期时间戳（Unix时间戳毫秒）
     string message = 6;          // 错误信息（失败时返回）
+}
+
+// ============================================
+// 战斗事件消息
+// ============================================
+
+// 开火事件上报（射击方客户端发送，服务端转发给房间内其他玩家）
+// 弹道信息供其他客户端重播视觉表现；命中判定由射击方本地完成（demo阶段客户端权威）
+message FireEventReq {
+    // 弹道起点（枪口）
+    float origin_x = 1;
+    float origin_y = 2;
+    float origin_z = 3;
+
+    // 飞行方向（单位向量）
+    float dir_x = 4;
+    float dir_y = 5;
+    float dir_z = 6;
+
+    // 弹道终点（命中点或射程尽头）
+    float end_x = 7;
+    float end_y = 8;
+    float end_z = 9;
+
+    bool hit_something = 10;     // 是否命中了任何东西
+    string hit_player_id = 11;   // 命中的玩家ID（预留伤害结算，未命中为空）
+
+    // 命中表面的法线（命中时有效；远端直接用它摆弹孔，不做本地重放）
+    float hit_normal_x = 12;
+    float hit_normal_y = 13;
+    float hit_normal_z = 14;
+}
+
+// 开火事件广播（服务端发给房间内除射手外的玩家）
+message FireEventNotify {
+    string player_id = 1;        // 射手ID（接收方据此找到对应的远程玩家播特效）
+
+    // 弹道（与 FireEventReq 同构）
+    float origin_x = 2;
+    float origin_y = 3;
+    float origin_z = 4;
+    float dir_x = 5;
+    float dir_y = 6;
+    float dir_z = 7;
+    float end_x = 8;
+    float end_y = 9;
+    float end_z = 10;
+    bool hit_something = 11;
+    string hit_player_id = 12;
+
+    // 命中表面的法线（与 FireEventReq 同构）
+    float hit_normal_x = 13;
+    float hit_normal_y = 14;
+    float hit_normal_z = 15;
 }

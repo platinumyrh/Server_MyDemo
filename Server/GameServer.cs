@@ -191,6 +191,11 @@ namespace Server_MyDemo.Server
                         HandlePlayerInput(clientEndpoint, data);
                         break;
 
+                    // === 战斗事件 ===
+                    case MsgID.C2SFireEvent:
+                        HandleFireEvent(clientEndpoint, data);
+                        break;
+
                     default:
                         Console.WriteLine($"[GameServer] ⚠️ 未处理的消息类型: {msgId}");
                         break;
@@ -413,6 +418,61 @@ namespace Server_MyDemo.Server
 
             // 将输入提交给帧同步管理器（位置会在内部做速度校验）
             _frameSyncManager.AddPlayerInput(playerId, req);
+        }
+
+        /// <summary>
+        /// 处理开火事件：demo阶段服务端只做中继——
+        /// 把射击方上报的弹道/命中信息转发给房间内其他玩家，供其重播视觉表现。
+        /// 伤害结算接入后，这里改为先验证命中合法性再转发/结算
+        /// </summary>
+        private void HandleFireEvent(IPEndPoint client, byte[] data)
+        {
+            var req = FireEventReq.Parser.ParseFrom(data);
+            string playerId = GetOrCreatePlayer(client);
+
+            // 探针：确认事件到达服务端
+            Console.WriteLine($"[GameServer] 🔫 收到开火事件 [{playerId}] hit={req.HitSomething}");
+
+            string? roomId = _roomManager.GetPlayerRoomId(playerId);
+            if (string.IsNullOrEmpty(roomId))
+            {
+                Console.WriteLine("[GameServer] ⚠️ 开火事件被丢弃：射手不在任何房间");
+                return;
+            }
+
+            var room = _roomManager.GetRoom(roomId!);
+            if (room == null) return;
+
+            var notify = new FireEventNotify
+            {
+                PlayerId = playerId,
+                OriginX = req.OriginX,
+                OriginY = req.OriginY,
+                OriginZ = req.OriginZ,
+                DirX = req.DirX,
+                DirY = req.DirY,
+                DirZ = req.DirZ,
+                EndX = req.EndX,
+                EndY = req.EndY,
+                EndZ = req.EndZ,
+                HitSomething = req.HitSomething,
+                HitPlayerId = req.HitPlayerId,
+                HitNormalX = req.HitNormalX,
+                HitNormalY = req.HitNormalY,
+                HitNormalZ = req.HitNormalZ
+            };
+
+            // 转发给房间内除射手以外的玩家（射手本地已即时播放，不发回去避免双重特效）
+            foreach (var player in room.Players)
+            {
+                if (player.PlayerId == playerId) continue;
+
+                var endpoint = _networkServer.GetPlayerEndpoint(player.PlayerId);
+                if (endpoint != null)
+                {
+                    _networkServer.Send(endpoint, MsgID.S2CFireEvent, notify);
+                }
+            }
         }
 
         private void HandleStartGame(IPEndPoint client)

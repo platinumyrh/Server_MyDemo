@@ -126,7 +126,10 @@ namespace Server_MyDemo.Utils
                     PosX = validated.X,
                     PosY = validated.Y,
                     PosZ = validated.Z,
-                    RotY = input.RotY
+                    RotY = input.RotY,
+                    // 持续状态随快照走：远端玩家据此播放开火/换弹表现
+                    IsFiring = input.Fire,
+                    IsReloading = input.Reload
                 };
             }
         }
