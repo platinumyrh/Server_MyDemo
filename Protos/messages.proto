@@ -40,6 +40,8 @@ enum MsgID {
     // === 战斗事件 (80-89) ===
     C2S_FireEvent = 80;        // 客户端 → 服务端：开火事件上报（弹道+命中信息）
     S2C_FireEvent = 81;        // 服务端 → 客户端：开火事件广播（房间内其他玩家）
+    C2S_PlayerDied = 82;       // 客户端 → 服务端：死亡上报（受击方权威，血量归零时发送）
+    S2C_PlayerDied = 83;       // 服务端 → 客户端：死亡广播（击杀归属、死亡表现）
 }
 
 // ============================================
@@ -189,6 +191,8 @@ message PlayerState {
     float rot_y = 4;             // 朝向（角度，度）
     bool is_firing = 5;          // 正在开火（持续状态，随快照走）
     bool is_reloading = 6;       // 换弹中（持续状态，随快照走）
+    int32 hp = 7;                // 当前血量（受击方权威，随快照走）
+    bool is_dead = 8;            // 是否死亡
 }
 
 // 帧状态同步（服务端每帧广播给所有玩家）
@@ -299,6 +303,9 @@ message FireEventReq {
     float hit_normal_x = 12;
     float hit_normal_y = 13;
     float hit_normal_z = 14;
+
+    // 伤害结果（射手按本地武器配置计算，受击方直接扣血——传结果不传攻击力）
+    int32 damage = 15;
 }
 
 // 开火事件广播（服务端发给房间内除射手外的玩家）
@@ -322,4 +329,13 @@ message FireEventNotify {
     float hit_normal_x = 13;
     float hit_normal_y = 14;
     float hit_normal_z = 15;
+
+    // 伤害结果（与 FireEventReq 同构）
+    int32 damage = 16;
+}
+
+// 死亡上报/广播（受击方血量归零时上报，服务端广播全房间用于击杀归属与死亡表现）
+message PlayerDiedNotify {
+    string victim_id = 1;        // 死亡玩家ID
+    string killer_id = 2;        // 击杀者ID（自杀/环境伤害为空）
 }

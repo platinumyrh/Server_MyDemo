@@ -54,55 +54,58 @@ namespace GameNetwork {
             "DSABKAISDQoFcm90X3kYDiABKAISPgoKZXh0cmFfZGF0YRhjIAMoCzIqLkdh",
             "bWVOZXR3b3JrLlBsYXllcklucHV0UmVxLkV4dHJhRGF0YUVudHJ5GjAKDkV4",
             "dHJhRGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEi",
-            "cgoLUGxheWVyU3RhdGUSDQoFcG9zX3gYASABKAISDQoFcG9zX3kYAiABKAIS",
-            "DQoFcG9zX3oYAyABKAISDQoFcm90X3kYBCABKAISEQoJaXNfZmlyaW5nGAUg",
-            "ASgIEhQKDGlzX3JlbG9hZGluZxgGIAEoCCKJAwoORnJhbWVTdGF0ZVJlc3AS",
-            "EAoIZnJhbWVfaWQYASABKA0SEwoLc2VydmVyX3RpbWUYAiABKAMSRAoNcGxh",
-            "eWVyX2lucHV0cxgDIAMoCzItLkdhbWVOZXR3b3JrLkZyYW1lU3RhdGVSZXNw",
-            "LlBsYXllcklucHV0c0VudHJ5EkQKDXBsYXllcl9zdGF0ZXMYBSADKAsyLS5H",
-            "YW1lTmV0d29yay5GcmFtZVN0YXRlUmVzcC5QbGF5ZXJTdGF0ZXNFbnRyeRIm",
-            "CgZldmVudHMYBCADKAsyFi5HYW1lTmV0d29yay5HYW1lRXZlbnQaTQoRUGxh",
-            "eWVySW5wdXRzRW50cnkSCwoDa2V5GAEgASgJEicKBXZhbHVlGAIgASgLMhgu",
-            "R2FtZU5ldHdvcmsuUGxheWVySW5wdXQ6AjgBGk0KEVBsYXllclN0YXRlc0Vu",
-            "dHJ5EgsKA2tleRgBIAEoCRInCgV2YWx1ZRgCIAEoCzIYLkdhbWVOZXR3b3Jr",
-            "LlBsYXllclN0YXRlOgI4ASK5AQoLUGxheWVySW5wdXQSEQoJcGxheWVyX2lk",
-            "GAEgASgJEg4KBm1vdmVfeBgCIAEoAhIOCgZtb3ZlX3kYAyABKAISFAoMaXNf",
-            "c3ByaW50aW5nGAQgASgIEhEKCWlzX2FpbWluZxgFIAEoCBIMCgRmaXJlGAYg",
-            "ASgIEg4KBnJlbG9hZBgHIAEoCBIMCgRqdW1wGAggASgIEhAKCGludGVyYWN0",
-            "GAkgASgIEhAKCHJvdGF0aW9uGAogASgCIqoBCglHYW1lRXZlbnQSEgoKZXZl",
-            "bnRfdHlwZRgBIAEoBRIVCg1zb3VyY2VfcGxheWVyGAIgASgJEhUKDXRhcmdl",
-            "dF9wbGF5ZXIYAyABKAkSLgoEZGF0YRgEIAMoCzIgLkdhbWVOZXR3b3JrLkdh",
-            "bWVFdmVudC5EYXRhRW50cnkaKwoJRGF0YUVudHJ5EgsKA2tleRgBIAEoCRIN",
-            "CgV2YWx1ZRgCIAEoCToCOAEiDgoMU3RhcnRHYW1lUmVxIjYKD0dhbWVTdGFy",
-            "dE5vdGlmeRIPCgdyb29tX2lkGAEgASgJEhIKCnN0YXJ0X3RpbWUYAiABKAMi",
-            "RAoOR2FtZU92ZXJOb3RpZnkSDwoHcm9vbV9pZBgBIAEoCRIRCgl3aW5uZXJf",
-            "aWQYAiABKAkSDgoGcmVhc29uGAMgASgFIi4KCExvZ2luUmVxEhAKCHVzZXJu",
-            "YW1lGAEgASgJEhAKCHBhc3N3b3JkGAIgASgJInQKCUxvZ2luUmVzcBIPCgdz",
-            "dWNjZXNzGAEgASgIEg8KB3VzZXJfaWQYAiABKAkSEAoIdXNlcm5hbWUYAyAB",
-            "KAkSDQoFdG9rZW4YBCABKAkSEwoLZXhwaXJlX3RpbWUYBSABKAMSDwoHbWVz",
-            "c2FnZRgGIAEoCSKOAgoMRmlyZUV2ZW50UmVxEhAKCG9yaWdpbl94GAEgASgC",
-            "EhAKCG9yaWdpbl95GAIgASgCEhAKCG9yaWdpbl96GAMgASgCEg0KBWRpcl94",
-            "GAQgASgCEg0KBWRpcl95GAUgASgCEg0KBWRpcl96GAYgASgCEg0KBWVuZF94",
-            "GAcgASgCEg0KBWVuZF95GAggASgCEg0KBWVuZF96GAkgASgCEhUKDWhpdF9z",
-            "b21ldGhpbmcYCiABKAgSFQoNaGl0X3BsYXllcl9pZBgLIAEoCRIUCgxoaXRf",
-            "bm9ybWFsX3gYDCABKAISFAoMaGl0X25vcm1hbF95GA0gASgCEhQKDGhpdF9u",
-            "b3JtYWxfehgOIAEoAiKkAgoPRmlyZUV2ZW50Tm90aWZ5EhEKCXBsYXllcl9p",
-            "ZBgBIAEoCRIQCghvcmlnaW5feBgCIAEoAhIQCghvcmlnaW5feRgDIAEoAhIQ",
-            "CghvcmlnaW5fehgEIAEoAhINCgVkaXJfeBgFIAEoAhINCgVkaXJfeRgGIAEo",
-            "AhINCgVkaXJfehgHIAEoAhINCgVlbmRfeBgIIAEoAhINCgVlbmRfeRgJIAEo",
-            "AhINCgVlbmRfehgKIAEoAhIVCg1oaXRfc29tZXRoaW5nGAsgASgIEhUKDWhp",
-            "dF9wbGF5ZXJfaWQYDCABKAkSFAoMaGl0X25vcm1hbF94GA0gASgCEhQKDGhp",
-            "dF9ub3JtYWxfeRgOIAEoAhIUCgxoaXRfbm9ybWFsX3oYDyABKAIqogMKBU1z",
-            "Z0lEEgwKCE1TR19OT05FEAASEQoNQzJTX0hlYXJ0QmVhdBABEhEKDVMyQ19I",
-            "ZWFydEJlYXQQAhISCg5DMlNfQ3JlYXRlUm9vbRAKEhIKDlMyQ19DcmVhdGVS",
-            "b29tEAsSEAoMQzJTX0pvaW5Sb29tEAwSEAoMUzJDX0pvaW5Sb29tEA0SEQoN",
-            "QzJTX0xlYXZlUm9vbRAOEhEKDVMyQ19MZWF2ZVJvb20QDxITCg9DMlNfR2V0",
-            "Um9vbUxpc3QQEBIQCgxTMkNfUm9vbUxpc3QQERISCg5TMkNfUGxheWVySm9p",
-            "bhASEhMKD1MyQ19QbGF5ZXJMZWF2ZRATEhEKDUMyU19TdGFydEdhbWUQFBIT",
-            "Cg9DMlNfUGxheWVySW5wdXQQHhISCg5TMkNfRnJhbWVTdGF0ZRAfEhEKDVMy",
-            "Q19HYW1lU3RhcnQQMhIQCgxTMkNfR2FtZU92ZXIQMxINCglDMlNfTG9naW4Q",
-            "RhINCglTMkNfTG9naW4QRxIRCg1DMlNfRmlyZUV2ZW50EFASEQoNUzJDX0Zp",
-            "cmVFdmVudBBRYgZwcm90bzM="));
+            "jwEKC1BsYXllclN0YXRlEg0KBXBvc194GAEgASgCEg0KBXBvc195GAIgASgC",
+            "Eg0KBXBvc196GAMgASgCEg0KBXJvdF95GAQgASgCEhEKCWlzX2ZpcmluZxgF",
+            "IAEoCBIUCgxpc19yZWxvYWRpbmcYBiABKAgSCgoCaHAYByABKAUSDwoHaXNf",
+            "ZGVhZBgIIAEoCCKJAwoORnJhbWVTdGF0ZVJlc3ASEAoIZnJhbWVfaWQYASAB",
+            "KA0SEwoLc2VydmVyX3RpbWUYAiABKAMSRAoNcGxheWVyX2lucHV0cxgDIAMo",
+            "CzItLkdhbWVOZXR3b3JrLkZyYW1lU3RhdGVSZXNwLlBsYXllcklucHV0c0Vu",
+            "dHJ5EkQKDXBsYXllcl9zdGF0ZXMYBSADKAsyLS5HYW1lTmV0d29yay5GcmFt",
+            "ZVN0YXRlUmVzcC5QbGF5ZXJTdGF0ZXNFbnRyeRImCgZldmVudHMYBCADKAsy",
+            "Fi5HYW1lTmV0d29yay5HYW1lRXZlbnQaTQoRUGxheWVySW5wdXRzRW50cnkS",
+            "CwoDa2V5GAEgASgJEicKBXZhbHVlGAIgASgLMhguR2FtZU5ldHdvcmsuUGxh",
+            "eWVySW5wdXQ6AjgBGk0KEVBsYXllclN0YXRlc0VudHJ5EgsKA2tleRgBIAEo",
+            "CRInCgV2YWx1ZRgCIAEoCzIYLkdhbWVOZXR3b3JrLlBsYXllclN0YXRlOgI4",
+            "ASK5AQoLUGxheWVySW5wdXQSEQoJcGxheWVyX2lkGAEgASgJEg4KBm1vdmVf",
+            "eBgCIAEoAhIOCgZtb3ZlX3kYAyABKAISFAoMaXNfc3ByaW50aW5nGAQgASgI",
+            "EhEKCWlzX2FpbWluZxgFIAEoCBIMCgRmaXJlGAYgASgIEg4KBnJlbG9hZBgH",
+            "IAEoCBIMCgRqdW1wGAggASgIEhAKCGludGVyYWN0GAkgASgIEhAKCHJvdGF0",
+            "aW9uGAogASgCIqoBCglHYW1lRXZlbnQSEgoKZXZlbnRfdHlwZRgBIAEoBRIV",
+            "Cg1zb3VyY2VfcGxheWVyGAIgASgJEhUKDXRhcmdldF9wbGF5ZXIYAyABKAkS",
+            "LgoEZGF0YRgEIAMoCzIgLkdhbWVOZXR3b3JrLkdhbWVFdmVudC5EYXRhRW50",
+            "cnkaKwoJRGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToC",
+            "OAEiDgoMU3RhcnRHYW1lUmVxIjYKD0dhbWVTdGFydE5vdGlmeRIPCgdyb29t",
+            "X2lkGAEgASgJEhIKCnN0YXJ0X3RpbWUYAiABKAMiRAoOR2FtZU92ZXJOb3Rp",
+            "ZnkSDwoHcm9vbV9pZBgBIAEoCRIRCgl3aW5uZXJfaWQYAiABKAkSDgoGcmVh",
+            "c29uGAMgASgFIi4KCExvZ2luUmVxEhAKCHVzZXJuYW1lGAEgASgJEhAKCHBh",
+            "c3N3b3JkGAIgASgJInQKCUxvZ2luUmVzcBIPCgdzdWNjZXNzGAEgASgIEg8K",
+            "B3VzZXJfaWQYAiABKAkSEAoIdXNlcm5hbWUYAyABKAkSDQoFdG9rZW4YBCAB",
+            "KAkSEwoLZXhwaXJlX3RpbWUYBSABKAMSDwoHbWVzc2FnZRgGIAEoCSKeAgoM",
+            "RmlyZUV2ZW50UmVxEhAKCG9yaWdpbl94GAEgASgCEhAKCG9yaWdpbl95GAIg",
+            "ASgCEhAKCG9yaWdpbl96GAMgASgCEg0KBWRpcl94GAQgASgCEg0KBWRpcl95",
+            "GAUgASgCEg0KBWRpcl96GAYgASgCEg0KBWVuZF94GAcgASgCEg0KBWVuZF95",
+            "GAggASgCEg0KBWVuZF96GAkgASgCEhUKDWhpdF9zb21ldGhpbmcYCiABKAgS",
+            "FQoNaGl0X3BsYXllcl9pZBgLIAEoCRIUCgxoaXRfbm9ybWFsX3gYDCABKAIS",
+            "FAoMaGl0X25vcm1hbF95GA0gASgCEhQKDGhpdF9ub3JtYWxfehgOIAEoAhIO",
+            "CgZkYW1hZ2UYDyABKAUitAIKD0ZpcmVFdmVudE5vdGlmeRIRCglwbGF5ZXJf",
+            "aWQYASABKAkSEAoIb3JpZ2luX3gYAiABKAISEAoIb3JpZ2luX3kYAyABKAIS",
+            "EAoIb3JpZ2luX3oYBCABKAISDQoFZGlyX3gYBSABKAISDQoFZGlyX3kYBiAB",
+            "KAISDQoFZGlyX3oYByABKAISDQoFZW5kX3gYCCABKAISDQoFZW5kX3kYCSAB",
+            "KAISDQoFZW5kX3oYCiABKAISFQoNaGl0X3NvbWV0aGluZxgLIAEoCBIVCg1o",
+            "aXRfcGxheWVyX2lkGAwgASgJEhQKDGhpdF9ub3JtYWxfeBgNIAEoAhIUCgxo",
+            "aXRfbm9ybWFsX3kYDiABKAISFAoMaGl0X25vcm1hbF96GA8gASgCEg4KBmRh",
+            "bWFnZRgQIAEoBSI4ChBQbGF5ZXJEaWVkTm90aWZ5EhEKCXZpY3RpbV9pZBgB",
+            "IAEoCRIRCglraWxsZXJfaWQYAiABKAkqygMKBU1zZ0lEEgwKCE1TR19OT05F",
+            "EAASEQoNQzJTX0hlYXJ0QmVhdBABEhEKDVMyQ19IZWFydEJlYXQQAhISCg5D",
+            "MlNfQ3JlYXRlUm9vbRAKEhIKDlMyQ19DcmVhdGVSb29tEAsSEAoMQzJTX0pv",
+            "aW5Sb29tEAwSEAoMUzJDX0pvaW5Sb29tEA0SEQoNQzJTX0xlYXZlUm9vbRAO",
+            "EhEKDVMyQ19MZWF2ZVJvb20QDxITCg9DMlNfR2V0Um9vbUxpc3QQEBIQCgxT",
+            "MkNfUm9vbUxpc3QQERISCg5TMkNfUGxheWVySm9pbhASEhMKD1MyQ19QbGF5",
+            "ZXJMZWF2ZRATEhEKDUMyU19TdGFydEdhbWUQFBITCg9DMlNfUGxheWVySW5w",
+            "dXQQHhISCg5TMkNfRnJhbWVTdGF0ZRAfEhEKDVMyQ19HYW1lU3RhcnQQMhIQ",
+            "CgxTMkNfR2FtZU92ZXIQMxINCglDMlNfTG9naW4QRhINCglTMkNfTG9naW4Q",
+            "RxIRCg1DMlNfRmlyZUV2ZW50EFASEQoNUzJDX0ZpcmVFdmVudBBREhIKDkMy",
+            "U19QbGF5ZXJEaWVkEFISEgoOUzJDX1BsYXllckRpZWQQU2IGcHJvdG8z"));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::GameNetwork.MsgID), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -121,7 +124,7 @@ namespace GameNetwork {
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.RoomInfo), global::GameNetwork.RoomInfo.Parser, new[]{ "RoomId", "RoomName", "HostId", "MaxPlayers", "CurrentPlayers", "HasPassword", "IsPlaying", "Players" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInfo), global::GameNetwork.PlayerInfo.Parser, new[]{ "PlayerId", "PlayerName", "IsReady" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInputReq), global::GameNetwork.PlayerInputReq.Parser, new[]{ "FrameId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation", "PosX", "PosY", "PosZ", "RotY", "ExtraData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerState), global::GameNetwork.PlayerState.Parser, new[]{ "PosX", "PosY", "PosZ", "RotY", "IsFiring", "IsReloading" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerState), global::GameNetwork.PlayerState.Parser, new[]{ "PosX", "PosY", "PosZ", "RotY", "IsFiring", "IsReloading", "Hp", "IsDead" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FrameStateResp), global::GameNetwork.FrameStateResp.Parser, new[]{ "FrameId", "ServerTime", "PlayerInputs", "PlayerStates", "Events" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInput), global::GameNetwork.PlayerInput.Parser, new[]{ "PlayerId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.GameEvent), global::GameNetwork.GameEvent.Parser, new[]{ "EventType", "SourcePlayer", "TargetPlayer", "Data" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
@@ -130,8 +133,9 @@ namespace GameNetwork {
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.GameOverNotify), global::GameNetwork.GameOverNotify.Parser, new[]{ "RoomId", "WinnerId", "Reason" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.LoginReq), global::GameNetwork.LoginReq.Parser, new[]{ "Username", "Password" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.LoginResp), global::GameNetwork.LoginResp.Parser, new[]{ "Success", "UserId", "Username", "Token", "ExpireTime", "Message" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FireEventReq), global::GameNetwork.FireEventReq.Parser, new[]{ "OriginX", "OriginY", "OriginZ", "DirX", "DirY", "DirZ", "EndX", "EndY", "EndZ", "HitSomething", "HitPlayerId", "HitNormalX", "HitNormalY", "HitNormalZ" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FireEventNotify), global::GameNetwork.FireEventNotify.Parser, new[]{ "PlayerId", "OriginX", "OriginY", "OriginZ", "DirX", "DirY", "DirZ", "EndX", "EndY", "EndZ", "HitSomething", "HitPlayerId", "HitNormalX", "HitNormalY", "HitNormalZ" }, null, null, null, null)
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FireEventReq), global::GameNetwork.FireEventReq.Parser, new[]{ "OriginX", "OriginY", "OriginZ", "DirX", "DirY", "DirZ", "EndX", "EndY", "EndZ", "HitSomething", "HitPlayerId", "HitNormalX", "HitNormalY", "HitNormalZ", "Damage" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FireEventNotify), global::GameNetwork.FireEventNotify.Parser, new[]{ "PlayerId", "OriginX", "OriginY", "OriginZ", "DirX", "DirY", "DirZ", "EndX", "EndY", "EndZ", "HitSomething", "HitPlayerId", "HitNormalX", "HitNormalY", "HitNormalZ", "Damage" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerDiedNotify), global::GameNetwork.PlayerDiedNotify.Parser, new[]{ "VictimId", "KillerId" }, null, null, null, null)
           }));
     }
     #endregion
@@ -232,6 +236,14 @@ namespace GameNetwork {
     /// 服务端 → 客户端：开火事件广播（房间内其他玩家）
     /// </summary>
     [pbr::OriginalName("S2C_FireEvent")] S2CFireEvent = 81,
+    /// <summary>
+    /// 客户端 → 服务端：死亡上报（受击方权威，血量归零时发送）
+    /// </summary>
+    [pbr::OriginalName("C2S_PlayerDied")] C2SPlayerDied = 82,
+    /// <summary>
+    /// 服务端 → 客户端：死亡广播（击杀归属、死亡表现）
+    /// </summary>
+    [pbr::OriginalName("S2C_PlayerDied")] S2CPlayerDied = 83,
   }
 
   #endregion
@@ -4551,6 +4563,8 @@ namespace GameNetwork {
       rotY_ = other.rotY_;
       isFiring_ = other.isFiring_;
       isReloading_ = other.isReloading_;
+      hp_ = other.hp_;
+      isDead_ = other.isDead_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -4650,6 +4664,36 @@ namespace GameNetwork {
       }
     }
 
+    /// <summary>Field number for the "hp" field.</summary>
+    public const int HpFieldNumber = 7;
+    private int hp_;
+    /// <summary>
+    /// 当前血量（受击方权威，随快照走）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Hp {
+      get { return hp_; }
+      set {
+        hp_ = value;
+      }
+    }
+
+    /// <summary>Field number for the "is_dead" field.</summary>
+    public const int IsDeadFieldNumber = 8;
+    private bool isDead_;
+    /// <summary>
+    /// 是否死亡
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool IsDead {
+      get { return isDead_; }
+      set {
+        isDead_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -4671,6 +4715,8 @@ namespace GameNetwork {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(RotY, other.RotY)) return false;
       if (IsFiring != other.IsFiring) return false;
       if (IsReloading != other.IsReloading) return false;
+      if (Hp != other.Hp) return false;
+      if (IsDead != other.IsDead) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -4684,6 +4730,8 @@ namespace GameNetwork {
       if (RotY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(RotY);
       if (IsFiring != false) hash ^= IsFiring.GetHashCode();
       if (IsReloading != false) hash ^= IsReloading.GetHashCode();
+      if (Hp != 0) hash ^= Hp.GetHashCode();
+      if (IsDead != false) hash ^= IsDead.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -4726,6 +4774,14 @@ namespace GameNetwork {
         output.WriteRawTag(48);
         output.WriteBool(IsReloading);
       }
+      if (Hp != 0) {
+        output.WriteRawTag(56);
+        output.WriteInt32(Hp);
+      }
+      if (IsDead != false) {
+        output.WriteRawTag(64);
+        output.WriteBool(IsDead);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -4760,6 +4816,14 @@ namespace GameNetwork {
         output.WriteRawTag(48);
         output.WriteBool(IsReloading);
       }
+      if (Hp != 0) {
+        output.WriteRawTag(56);
+        output.WriteInt32(Hp);
+      }
+      if (IsDead != false) {
+        output.WriteRawTag(64);
+        output.WriteBool(IsDead);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -4786,6 +4850,12 @@ namespace GameNetwork {
         size += 1 + 1;
       }
       if (IsReloading != false) {
+        size += 1 + 1;
+      }
+      if (Hp != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Hp);
+      }
+      if (IsDead != false) {
         size += 1 + 1;
       }
       if (_unknownFields != null) {
@@ -4817,6 +4887,12 @@ namespace GameNetwork {
       }
       if (other.IsReloading != false) {
         IsReloading = other.IsReloading;
+      }
+      if (other.Hp != 0) {
+        Hp = other.Hp;
+      }
+      if (other.IsDead != false) {
+        IsDead = other.IsDead;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -4857,6 +4933,14 @@ namespace GameNetwork {
             IsReloading = input.ReadBool();
             break;
           }
+          case 56: {
+            Hp = input.ReadInt32();
+            break;
+          }
+          case 64: {
+            IsDead = input.ReadBool();
+            break;
+          }
         }
       }
     #endif
@@ -4894,6 +4978,14 @@ namespace GameNetwork {
           }
           case 48: {
             IsReloading = input.ReadBool();
+            break;
+          }
+          case 56: {
+            Hp = input.ReadInt32();
+            break;
+          }
+          case 64: {
+            IsDead = input.ReadBool();
             break;
           }
         }
@@ -7404,6 +7496,7 @@ namespace GameNetwork {
       hitNormalX_ = other.hitNormalX_;
       hitNormalY_ = other.hitNormalY_;
       hitNormalZ_ = other.hitNormalZ_;
+      damage_ = other.damage_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -7599,6 +7692,21 @@ namespace GameNetwork {
       }
     }
 
+    /// <summary>Field number for the "damage" field.</summary>
+    public const int DamageFieldNumber = 15;
+    private int damage_;
+    /// <summary>
+    /// 伤害结果（射手按本地武器配置计算，受击方直接扣血——传结果不传攻击力）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Damage {
+      get { return damage_; }
+      set {
+        damage_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -7628,6 +7736,7 @@ namespace GameNetwork {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalX, other.HitNormalX)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalY, other.HitNormalY)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalZ, other.HitNormalZ)) return false;
+      if (Damage != other.Damage) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -7649,6 +7758,7 @@ namespace GameNetwork {
       if (HitNormalX != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalX);
       if (HitNormalY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalY);
       if (HitNormalZ != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalZ);
+      if (Damage != 0) hash ^= Damage.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -7723,6 +7833,10 @@ namespace GameNetwork {
         output.WriteRawTag(117);
         output.WriteFloat(HitNormalZ);
       }
+      if (Damage != 0) {
+        output.WriteRawTag(120);
+        output.WriteInt32(Damage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -7789,6 +7903,10 @@ namespace GameNetwork {
         output.WriteRawTag(117);
         output.WriteFloat(HitNormalZ);
       }
+      if (Damage != 0) {
+        output.WriteRawTag(120);
+        output.WriteInt32(Damage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -7840,6 +7958,9 @@ namespace GameNetwork {
       }
       if (HitNormalZ != 0F) {
         size += 1 + 4;
+      }
+      if (Damage != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeInt32Size(Damage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -7894,6 +8015,9 @@ namespace GameNetwork {
       }
       if (other.HitNormalZ != 0F) {
         HitNormalZ = other.HitNormalZ;
+      }
+      if (other.Damage != 0) {
+        Damage = other.Damage;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -7964,6 +8088,10 @@ namespace GameNetwork {
           }
           case 117: {
             HitNormalZ = input.ReadFloat();
+            break;
+          }
+          case 120: {
+            Damage = input.ReadInt32();
             break;
           }
         }
@@ -8037,6 +8165,10 @@ namespace GameNetwork {
             HitNormalZ = input.ReadFloat();
             break;
           }
+          case 120: {
+            Damage = input.ReadInt32();
+            break;
+          }
         }
       }
     }
@@ -8096,6 +8228,7 @@ namespace GameNetwork {
       hitNormalX_ = other.hitNormalX_;
       hitNormalY_ = other.hitNormalY_;
       hitNormalZ_ = other.hitNormalZ_;
+      damage_ = other.damage_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -8294,6 +8427,21 @@ namespace GameNetwork {
       }
     }
 
+    /// <summary>Field number for the "damage" field.</summary>
+    public const int DamageFieldNumber = 16;
+    private int damage_;
+    /// <summary>
+    /// 伤害结果（与 FireEventReq 同构）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int Damage {
+      get { return damage_; }
+      set {
+        damage_ = value;
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -8324,6 +8472,7 @@ namespace GameNetwork {
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalX, other.HitNormalX)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalY, other.HitNormalY)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(HitNormalZ, other.HitNormalZ)) return false;
+      if (Damage != other.Damage) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -8346,6 +8495,7 @@ namespace GameNetwork {
       if (HitNormalX != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalX);
       if (HitNormalY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalY);
       if (HitNormalZ != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(HitNormalZ);
+      if (Damage != 0) hash ^= Damage.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -8424,6 +8574,10 @@ namespace GameNetwork {
         output.WriteRawTag(125);
         output.WriteFloat(HitNormalZ);
       }
+      if (Damage != 0) {
+        output.WriteRawTag(128, 1);
+        output.WriteInt32(Damage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -8494,6 +8648,10 @@ namespace GameNetwork {
         output.WriteRawTag(125);
         output.WriteFloat(HitNormalZ);
       }
+      if (Damage != 0) {
+        output.WriteRawTag(128, 1);
+        output.WriteInt32(Damage);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -8548,6 +8706,9 @@ namespace GameNetwork {
       }
       if (HitNormalZ != 0F) {
         size += 1 + 4;
+      }
+      if (Damage != 0) {
+        size += 2 + pb::CodedOutputStream.ComputeInt32Size(Damage);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -8605,6 +8766,9 @@ namespace GameNetwork {
       }
       if (other.HitNormalZ != 0F) {
         HitNormalZ = other.HitNormalZ;
+      }
+      if (other.Damage != 0) {
+        Damage = other.Damage;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -8681,6 +8845,10 @@ namespace GameNetwork {
             HitNormalZ = input.ReadFloat();
             break;
           }
+          case 128: {
+            Damage = input.ReadInt32();
+            break;
+          }
         }
       }
     #endif
@@ -8754,6 +8922,245 @@ namespace GameNetwork {
           }
           case 125: {
             HitNormalZ = input.ReadFloat();
+            break;
+          }
+          case 128: {
+            Damage = input.ReadInt32();
+            break;
+          }
+        }
+      }
+    }
+    #endif
+
+  }
+
+  /// <summary>
+  /// 死亡上报/广播（受击方血量归零时上报，服务端广播全房间用于击杀归属与死亡表现）
+  /// </summary>
+  public sealed partial class PlayerDiedNotify : pb::IMessage<PlayerDiedNotify>
+  #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      , pb::IBufferMessage
+  #endif
+  {
+    private static readonly pb::MessageParser<PlayerDiedNotify> _parser = new pb::MessageParser<PlayerDiedNotify>(() => new PlayerDiedNotify());
+    private pb::UnknownFieldSet _unknownFields;
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pb::MessageParser<PlayerDiedNotify> Parser { get { return _parser; } }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public static pbr::MessageDescriptor Descriptor {
+      get { return global::GameNetwork.MessagesReflection.Descriptor.MessageTypes[26]; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    pbr::MessageDescriptor pb::IMessage.Descriptor {
+      get { return Descriptor; }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PlayerDiedNotify() {
+      OnConstruction();
+    }
+
+    partial void OnConstruction();
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PlayerDiedNotify(PlayerDiedNotify other) : this() {
+      victimId_ = other.victimId_;
+      killerId_ = other.killerId_;
+      _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public PlayerDiedNotify Clone() {
+      return new PlayerDiedNotify(this);
+    }
+
+    /// <summary>Field number for the "victim_id" field.</summary>
+    public const int VictimIdFieldNumber = 1;
+    private string victimId_ = "";
+    /// <summary>
+    /// 死亡玩家ID
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string VictimId {
+      get { return victimId_; }
+      set {
+        victimId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    /// <summary>Field number for the "killer_id" field.</summary>
+    public const int KillerIdFieldNumber = 2;
+    private string killerId_ = "";
+    /// <summary>
+    /// 击杀者ID（自杀/环境伤害为空）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string KillerId {
+      get { return killerId_; }
+      set {
+        killerId_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override bool Equals(object other) {
+      return Equals(other as PlayerDiedNotify);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public bool Equals(PlayerDiedNotify other) {
+      if (ReferenceEquals(other, null)) {
+        return false;
+      }
+      if (ReferenceEquals(other, this)) {
+        return true;
+      }
+      if (VictimId != other.VictimId) return false;
+      if (KillerId != other.KillerId) return false;
+      return Equals(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override int GetHashCode() {
+      int hash = 1;
+      if (VictimId.Length != 0) hash ^= VictimId.GetHashCode();
+      if (KillerId.Length != 0) hash ^= KillerId.GetHashCode();
+      if (_unknownFields != null) {
+        hash ^= _unknownFields.GetHashCode();
+      }
+      return hash;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public override string ToString() {
+      return pb::JsonFormatter.ToDiagnosticString(this);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void WriteTo(pb::CodedOutputStream output) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      output.WriteRawMessage(this);
+    #else
+      if (VictimId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(VictimId);
+      }
+      if (KillerId.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(KillerId);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(output);
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalWriteTo(ref pb::WriteContext output) {
+      if (VictimId.Length != 0) {
+        output.WriteRawTag(10);
+        output.WriteString(VictimId);
+      }
+      if (KillerId.Length != 0) {
+        output.WriteRawTag(18);
+        output.WriteString(KillerId);
+      }
+      if (_unknownFields != null) {
+        _unknownFields.WriteTo(ref output);
+      }
+    }
+    #endif
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public int CalculateSize() {
+      int size = 0;
+      if (VictimId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(VictimId);
+      }
+      if (KillerId.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(KillerId);
+      }
+      if (_unknownFields != null) {
+        size += _unknownFields.CalculateSize();
+      }
+      return size;
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(PlayerDiedNotify other) {
+      if (other == null) {
+        return;
+      }
+      if (other.VictimId.Length != 0) {
+        VictimId = other.VictimId;
+      }
+      if (other.KillerId.Length != 0) {
+        KillerId = other.KillerId;
+      }
+      _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
+    }
+
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public void MergeFrom(pb::CodedInputStream input) {
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+      input.ReadRawMessage(this);
+    #else
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, input);
+            break;
+          case 10: {
+            VictimId = input.ReadString();
+            break;
+          }
+          case 18: {
+            KillerId = input.ReadString();
+            break;
+          }
+        }
+      }
+    #endif
+    }
+
+    #if !GOOGLE_PROTOBUF_REFSTRUCT_COMPATIBILITY_MODE
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    void pb::IBufferMessage.InternalMergeFrom(ref pb::ParseContext input) {
+      uint tag;
+      while ((tag = input.ReadTag()) != 0) {
+        switch(tag) {
+          default:
+            _unknownFields = pb::UnknownFieldSet.MergeFieldFrom(_unknownFields, ref input);
+            break;
+          case 10: {
+            VictimId = input.ReadString();
+            break;
+          }
+          case 18: {
+            KillerId = input.ReadString();
             break;
           }
         }
