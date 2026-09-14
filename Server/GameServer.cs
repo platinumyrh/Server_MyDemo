@@ -196,6 +196,10 @@ namespace Server_MyDemo.Server
                         HandleFireEvent(clientEndpoint, data);
                         break;
 
+                    case MsgID.C2SPlayerDied:
+                        HandlePlayerDied(clientEndpoint, data);
+                        break;
+
                     default:
                         Console.WriteLine($"[GameServer] ⚠️ 未处理的消息类型: {msgId}");
                         break;
@@ -416,6 +420,9 @@ namespace Server_MyDemo.Server
             var req = PlayerInputReq.Parser.ParseFrom(data);
             string playerId = GetOrCreatePlayer(client);
 
+            // 死亡玩家：位置冻结（尸体不动），输入仍接收以保持连接活跃
+            if (_frameSyncManager.IsPlayerDead(playerId)) return;
+
             // 将输入提交给帧同步管理器（位置会在内部做速度校验）
             _frameSyncManager.AddPlayerInput(playerId, req);
         }
@@ -431,7 +438,10 @@ namespace Server_MyDemo.Server
             string playerId = GetOrCreatePlayer(client);
 
             // 探针：确认事件到达服务端
-            Console.WriteLine($"[GameServer] 🔫 收到开火事件 [{playerId}] hit={req.HitSomething}");
+            Console.WriteLine($"[GameServer] 🔫 收到开火事件 [{playerId}] hit={req.HitSomething} dmg={req.Damage} target={req.HitPlayerId}");
+
+            // 死亡射手不能再开枪
+            if (_frameSyncManager.IsPlayerDead(playerId)) return;
 
             string? roomId = _roomManager.GetPlayerRoomId(playerId);
             if (string.IsNullOrEmpty(roomId))
@@ -442,6 +452,21 @@ namespace Server_MyDemo.Server
 
             var room = _roomManager.GetRoom(roomId!);
             if (room == null) return;
+
+            // ===== 服务端结算：对受击方扣血，归零判定死亡并广播 =====
+            if (!string.IsNullOrEmpty(req.HitPlayerId) && req.Damage > 0)
+            {
+                bool died = _frameSyncManager.ApplyDamage(req.HitPlayerId, req.Damage);
+                if (died)
+                {
+                    BroadcastToRoom(roomId!, new PlayerDiedNotify
+                    {
+                        VictimId = req.HitPlayerId,
+                        KillerId = playerId
+                    }, MsgID.S2CPlayerDied);
+                    Console.WriteLine($"[GameServer] ☠️ [{req.HitPlayerId}] 被 [{playerId}] 击杀");
+                }
+            }
 
             var notify = new FireEventNotify
             {
@@ -459,18 +484,56 @@ namespace Server_MyDemo.Server
                 HitPlayerId = req.HitPlayerId,
                 HitNormalX = req.HitNormalX,
                 HitNormalY = req.HitNormalY,
-                HitNormalZ = req.HitNormalZ
+                HitNormalZ = req.HitNormalZ,
+                Damage = req.Damage
             };
 
-            // 转发给房间内除射手以外的玩家（射手本地已即时播放，不发回去避免双重特效）
+            // 转发给房间内所有玩家（含射手）：
+            // - 其他玩家重播弹道特效
+            // - 射手收到自己的回声用于驱动受击者的远端表现（客户端自行过滤本地部分）
             foreach (var player in room.Players)
             {
-                if (player.PlayerId == playerId) continue;
-
                 var endpoint = _networkServer.GetPlayerEndpoint(player.PlayerId);
                 if (endpoint != null)
                 {
                     _networkServer.Send(endpoint, MsgID.S2CFireEvent, notify);
+                }
+            }
+        }
+
+        /// <summary>
+        /// 客户端死亡上报（备用路径：正常死亡由服务端结算判定，
+        /// 此处处理环境伤害等客户端自主上报的死亡，广播给全房间）
+        /// </summary>
+        private void HandlePlayerDied(IPEndPoint client, byte[] data)
+        {
+            var req = PlayerDiedNotify.Parser.ParseFrom(data);
+            string playerId = GetOrCreatePlayer(client);
+
+            Console.WriteLine($"[GameServer] ☠️ 收到死亡上报 [{playerId}] killer={req.KillerId}");
+
+            string? roomId = _roomManager.GetPlayerRoomId(playerId);
+            if (string.IsNullOrEmpty(roomId)) return;
+
+            BroadcastToRoom(roomId!, new PlayerDiedNotify
+            {
+                VictimId = playerId,
+                KillerId = req.KillerId
+            }, MsgID.S2CPlayerDied);
+        }
+
+        /// <summary>向房间内所有玩家广播一条消息</summary>
+        private void BroadcastToRoom<T>(string roomId, T message, MsgID msgId) where T : Google.Protobuf.IMessage<T>
+        {
+            var room = _roomManager.GetRoom(roomId);
+            if (room == null) return;
+
+            foreach (var player in room.Players)
+            {
+                var endpoint = _networkServer.GetPlayerEndpoint(player.PlayerId);
+                if (endpoint != null)
+                {
+                    _networkServer.Send(endpoint, msgId, message);
                 }
             }
         }
@@ -495,6 +558,12 @@ namespace Server_MyDemo.Server
 
             var room = _roomManager.GetRoom(roomId!);
             if (room == null) return;
+
+            // 开局：为房间全体玩家初始化生命值（满血、未死亡）
+            foreach (var player in room.Players)
+            {
+                _frameSyncManager.InitPlayerVitals(player.PlayerId, FrameSyncManager.DEFAULT_MAX_HP);
+            }
 
             var notify = new GameStartNotify
             {

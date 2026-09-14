@@ -50,6 +50,9 @@ namespace Server_MyDemo.Utils
 
         private int _clampCount;                       // 钳制次数（用于节流日志）
 
+        /// <summary>默认血量上限（开局初始化用；以后从载具配置读取）</summary>
+        public const int DEFAULT_MAX_HP = 100;
+
         #endregion
 
         #region 构造函数
@@ -121,6 +124,9 @@ namespace Server_MyDemo.Utils
 
             lock (_playerStates)
             {
+                // 保留既有生命值/死亡状态（血量账本在服务端，输入包不携带血量）
+                _playerStates.TryGetValue(playerId, out var existing);
+
                 _playerStates[playerId] = new PlayerState
                 {
                     PosX = validated.X,
@@ -129,13 +135,15 @@ namespace Server_MyDemo.Utils
                     RotY = input.RotY,
                     // 持续状态随快照走：远端玩家据此播放开火/换弹表现
                     IsFiring = input.Fire,
-                    IsReloading = input.Reload
+                    IsReloading = input.Reload,
+                    Hp = existing?.Hp ?? DEFAULT_MAX_HP,
+                    IsDead = existing?.IsDead ?? false
                 };
             }
         }
 
         /// <summary>
-        /// 清除某个玩家的全部帧同步状态（输入缓冲、位置状态、校验记录）
+        /// 清除某个玩家的全部帧同步状态（输入缓冲、位置状态、校验记录、生命值）
         /// 玩家离线、离开房间时调用，避免状态残留被持续广播
         /// </summary>
         public void RemovePlayerState(string playerId)
@@ -153,6 +161,64 @@ namespace Server_MyDemo.Utils
             lock (_lastAcceptedPos)
             {
                 _lastAcceptedPos.Remove(playerId);
+            }
+        }
+
+        /// <summary>
+        /// 开局初始化玩家生命值（满血、未死亡）。整局开始时对房间全体调用
+        /// </summary>
+        public void InitPlayerVitals(string playerId, int maxHp)
+        {
+            lock (_playerStates)
+            {
+                if (_playerStates.TryGetValue(playerId, out var state))
+                {
+                    state.Hp = maxHp;
+                    state.IsDead = false;
+                }
+                else
+                {
+                    _playerStates[playerId] = new PlayerState
+                    {
+                        Hp = maxHp,
+                        IsDead = false
+                    };
+                }
+            }
+        }
+
+        /// <summary>
+        /// 服务端结算：对玩家施加伤害（血量账本在服务端）
+        /// </summary>
+        /// <param name="playerId">受击玩家</param>
+        /// <param name="damage">伤害值（射手上报，服务端钳制到 0..∞）</param>
+        /// <returns>本次伤害是否导致死亡（0→血量归零的瞬间）</returns>
+        public bool ApplyDamage(string playerId, int damage)
+        {
+            if (damage <= 0) return false;
+
+            lock (_playerStates)
+            {
+                if (!_playerStates.TryGetValue(playerId, out var state)) return false; // 没有生命记录（未开局）
+                if (state.IsDead) return false;                                        // 已死亡，忽略重复伤害
+
+                state.Hp = Math.Max(0, state.Hp - damage);
+                if (state.Hp == 0)
+                {
+                    state.IsDead = true;
+                    Console.WriteLine($"[FrameSync] ☠️ 玩家 [{playerId}] 血量归零，死亡");
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>玩家是否已死亡（无记录视为未死亡）</summary>
+        public bool IsPlayerDead(string playerId)
+        {
+            lock (_playerStates)
+            {
+                return _playerStates.TryGetValue(playerId, out var state) && state.IsDead;
             }
         }
 
