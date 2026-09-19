@@ -36,6 +36,9 @@ namespace Server_MyDemo.Utils
         // 位置校验用：记录每个玩家上一次被接受的位置与时间
         private Dictionary<string, (float X, float Y, float Z, DateTime Time)> _lastAcceptedPos;
 
+        // 玩家已登记的载具配置名（hold-last；用于按载具初始化血量上限）
+        private Dictionary<string, string> _playerVehicles;
+
         // 引用（不拥有）
         private RoomManager? _roomManager;
         private NetworkServer? _networkServer;
@@ -65,6 +68,7 @@ namespace Server_MyDemo.Utils
             _isRunning = false;
             _inputBuffer = new Dictionary<string, PlayerInputReq>();
             _playerStates = new Dictionary<string, PlayerState>();
+            _playerVehicles = new Dictionary<string, string>();
             _lastAcceptedPos = new Dictionary<string, (float, float, float, DateTime)>();
             _stopwatch = new Stopwatch();
 
@@ -119,6 +123,9 @@ namespace Server_MyDemo.Utils
                 _inputBuffer[playerId] = input;
             }
 
+            // 载具登记：首次上报或更换载具时，按配置把该玩家血量重置为满血
+            int vehicleMaxHp = ResolveVehicleMaxHp(playerId, input.Vehicle);
+
             // 位置先过校验（防瞬移），再写入 hold-last 状态
             var validated = ValidatePosition(playerId, input.PosX, input.PosY, input.PosZ);
 
@@ -136,10 +143,39 @@ namespace Server_MyDemo.Utils
                     // 持续状态随快照走：远端玩家据此播放开火/换弹表现
                     IsFiring = input.Fire,
                     IsReloading = input.Reload,
-                    Hp = existing?.Hp ?? DEFAULT_MAX_HP,
-                    IsDead = existing?.IsDead ?? false
+                    // 血量：载具首次登记/更换 → 按载具满血；否则延续当前血量
+                    Hp = vehicleMaxHp > 0 ? vehicleMaxHp : (existing?.Hp ?? DEFAULT_MAX_HP),
+                    IsDead = vehicleMaxHp > 0 ? false : (existing?.IsDead ?? false)
                 };
             }
+        }
+
+        /// <summary>
+        /// 解析玩家的血量上限（按其上报的载具配置名查 Data/vehicles.json）。
+        /// 返回值：载具首次登记/更换时返回其 maxHp；载具未变化返回 -1（沿用当前血量）
+        /// </summary>
+        private int ResolveVehicleMaxHp(string playerId, string vehicle)
+        {
+            if (string.IsNullOrEmpty(vehicle)) return -1;
+
+            var cfg = VehicleConfigStore.Get(vehicle);
+            if (cfg == null)
+            {
+                Console.WriteLine($"[FrameSync] ⚠️ 未知载具配置: {vehicle}（检查 Data/vehicles.json 与客户端 SO 名称是否一致）");
+                return -1;
+            }
+
+            lock (_playerVehicles)
+            {
+                if (_playerVehicles.TryGetValue(playerId, out var known) && known == vehicle)
+                {
+                    return -1; // 载具未变化
+                }
+                _playerVehicles[playerId] = vehicle;
+            }
+
+            Console.WriteLine($"[FrameSync] 🚗 玩家 [{playerId}] 载具登记: {vehicle} (maxHp={cfg.MaxHp})");
+            return cfg.MaxHp;
         }
 
         /// <summary>
@@ -161,6 +197,11 @@ namespace Server_MyDemo.Utils
             lock (_lastAcceptedPos)
             {
                 _lastAcceptedPos.Remove(playerId);
+            }
+
+            lock (_playerVehicles)
+            {
+                _playerVehicles.Remove(playerId);
             }
         }
 
@@ -195,6 +236,8 @@ namespace Server_MyDemo.Utils
         /// <returns>本次伤害是否导致死亡（0→血量归零的瞬间）</returns>
         public bool ApplyDamage(string playerId, int damage)
         {
+            // 伤害钳制：客户端上报值不可信，单发上限 200
+            damage = Math.Clamp(damage, 0, 200);
             if (damage <= 0) return false;
 
             lock (_playerStates)

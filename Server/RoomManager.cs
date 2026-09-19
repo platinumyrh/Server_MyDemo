@@ -42,7 +42,7 @@ namespace Server_MyDemo.Server
         /// <summary>
         /// 创建房间
         /// </summary>
-        public (bool Success, string? RoomId, string? Message) CreateRoom(string hostId, string roomName = "", string password = "", string roomId = "")
+        public (bool Success, string? RoomId, string? Message) CreateRoom(string hostId, string hostName, string roomName = "", string password = "", string roomId = "")
         {
             lock (_lock)
             {
@@ -80,7 +80,7 @@ namespace Server_MyDemo.Server
                 };
 
                 // 房主加入房间
-                var playerInfo = CreatePlayerInfo(hostId);
+                var playerInfo = CreatePlayerInfo(hostId, hostName);
                 room.Players.Add(playerInfo);
 
                 // 保存数据
@@ -117,7 +117,7 @@ namespace Server_MyDemo.Server
         /// <summary>
         /// 加入房间
         /// </summary>
-        public (bool Success, RoomInfo? RoomInfo, string? Message) JoinRoom(string playerId, string roomId, string password = "")
+        public (bool Success, RoomInfo? RoomInfo, string? Message) JoinRoom(string playerId, string playerName, string roomId, string password = "")
         {
             lock (_lock)
             {
@@ -152,7 +152,7 @@ namespace Server_MyDemo.Server
                 }
 
                 // 加入房间
-                var playerInfo = CreatePlayerInfo(playerId);
+                var playerInfo = CreatePlayerInfo(playerId, playerName);
                 room.Players.Add(playerInfo);
                 _playerRoom[playerId] = roomId;
 
@@ -264,14 +264,14 @@ namespace Server_MyDemo.Server
         }
 
         /// <summary>
-        /// 创建玩家信息
+        /// 创建玩家信息（playerName 为登录昵称，空则回退 ID）
         /// </summary>
-        private PlayerInfo CreatePlayerInfo(string playerId)
+        private PlayerInfo CreatePlayerInfo(string playerId, string playerName)
         {
             return new PlayerInfo
             {
                 PlayerId = playerId,
-                PlayerName = $"Player_{playerId}",  // ✅ 修复：使用字符串而不是数字
+                PlayerName = string.IsNullOrEmpty(playerName) ? $"Player_{playerId}" : playerName,
                 IsReady = false
             };
         }

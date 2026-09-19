@@ -45,67 +45,68 @@ namespace GameNetwork {
             "cnJlbnRfcGxheWVycxgFIAEoBRIUCgxoYXNfcGFzc3dvcmQYBiABKAgSEgoK",
             "aXNfcGxheWluZxgHIAEoCBIoCgdwbGF5ZXJzGAggAygLMhcuR2FtZU5ldHdv",
             "cmsuUGxheWVySW5mbyJGCgpQbGF5ZXJJbmZvEhEKCXBsYXllcl9pZBgBIAEo",
-            "CRITCgtwbGF5ZXJfbmFtZRgCIAEoCRIQCghpc19yZWFkeRgDIAEoCCLpAgoO",
+            "CRITCgtwbGF5ZXJfbmFtZRgCIAEoCRIQCghpc19yZWFkeRgDIAEoCCL6AgoO",
             "UGxheWVySW5wdXRSZXESEAoIZnJhbWVfaWQYASABKA0SDgoGbW92ZV94GAIg",
             "ASgCEg4KBm1vdmVfeRgDIAEoAhIUCgxpc19zcHJpbnRpbmcYBCABKAgSEQoJ",
             "aXNfYWltaW5nGAUgASgIEgwKBGZpcmUYBiABKAgSDgoGcmVsb2FkGAcgASgI",
             "EgwKBGp1bXAYCCABKAgSEAoIaW50ZXJhY3QYCSABKAgSEAoIcm90YXRpb24Y",
-            "CiABKAISDQoFcG9zX3gYCyABKAISDQoFcG9zX3kYDCABKAISDQoFcG9zX3oY",
-            "DSABKAISDQoFcm90X3kYDiABKAISPgoKZXh0cmFfZGF0YRhjIAMoCzIqLkdh",
-            "bWVOZXR3b3JrLlBsYXllcklucHV0UmVxLkV4dHJhRGF0YUVudHJ5GjAKDkV4",
-            "dHJhRGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToCOAEi",
-            "jwEKC1BsYXllclN0YXRlEg0KBXBvc194GAEgASgCEg0KBXBvc195GAIgASgC",
-            "Eg0KBXBvc196GAMgASgCEg0KBXJvdF95GAQgASgCEhEKCWlzX2ZpcmluZxgF",
-            "IAEoCBIUCgxpc19yZWxvYWRpbmcYBiABKAgSCgoCaHAYByABKAUSDwoHaXNf",
-            "ZGVhZBgIIAEoCCKJAwoORnJhbWVTdGF0ZVJlc3ASEAoIZnJhbWVfaWQYASAB",
-            "KA0SEwoLc2VydmVyX3RpbWUYAiABKAMSRAoNcGxheWVyX2lucHV0cxgDIAMo",
-            "CzItLkdhbWVOZXR3b3JrLkZyYW1lU3RhdGVSZXNwLlBsYXllcklucHV0c0Vu",
-            "dHJ5EkQKDXBsYXllcl9zdGF0ZXMYBSADKAsyLS5HYW1lTmV0d29yay5GcmFt",
-            "ZVN0YXRlUmVzcC5QbGF5ZXJTdGF0ZXNFbnRyeRImCgZldmVudHMYBCADKAsy",
-            "Fi5HYW1lTmV0d29yay5HYW1lRXZlbnQaTQoRUGxheWVySW5wdXRzRW50cnkS",
-            "CwoDa2V5GAEgASgJEicKBXZhbHVlGAIgASgLMhguR2FtZU5ldHdvcmsuUGxh",
-            "eWVySW5wdXQ6AjgBGk0KEVBsYXllclN0YXRlc0VudHJ5EgsKA2tleRgBIAEo",
-            "CRInCgV2YWx1ZRgCIAEoCzIYLkdhbWVOZXR3b3JrLlBsYXllclN0YXRlOgI4",
-            "ASK5AQoLUGxheWVySW5wdXQSEQoJcGxheWVyX2lkGAEgASgJEg4KBm1vdmVf",
-            "eBgCIAEoAhIOCgZtb3ZlX3kYAyABKAISFAoMaXNfc3ByaW50aW5nGAQgASgI",
-            "EhEKCWlzX2FpbWluZxgFIAEoCBIMCgRmaXJlGAYgASgIEg4KBnJlbG9hZBgH",
-            "IAEoCBIMCgRqdW1wGAggASgIEhAKCGludGVyYWN0GAkgASgIEhAKCHJvdGF0",
-            "aW9uGAogASgCIqoBCglHYW1lRXZlbnQSEgoKZXZlbnRfdHlwZRgBIAEoBRIV",
-            "Cg1zb3VyY2VfcGxheWVyGAIgASgJEhUKDXRhcmdldF9wbGF5ZXIYAyABKAkS",
-            "LgoEZGF0YRgEIAMoCzIgLkdhbWVOZXR3b3JrLkdhbWVFdmVudC5EYXRhRW50",
-            "cnkaKwoJRGF0YUVudHJ5EgsKA2tleRgBIAEoCRINCgV2YWx1ZRgCIAEoCToC",
-            "OAEiDgoMU3RhcnRHYW1lUmVxIjYKD0dhbWVTdGFydE5vdGlmeRIPCgdyb29t",
-            "X2lkGAEgASgJEhIKCnN0YXJ0X3RpbWUYAiABKAMiRAoOR2FtZU92ZXJOb3Rp",
-            "ZnkSDwoHcm9vbV9pZBgBIAEoCRIRCgl3aW5uZXJfaWQYAiABKAkSDgoGcmVh",
-            "c29uGAMgASgFIi4KCExvZ2luUmVxEhAKCHVzZXJuYW1lGAEgASgJEhAKCHBh",
-            "c3N3b3JkGAIgASgJInQKCUxvZ2luUmVzcBIPCgdzdWNjZXNzGAEgASgIEg8K",
-            "B3VzZXJfaWQYAiABKAkSEAoIdXNlcm5hbWUYAyABKAkSDQoFdG9rZW4YBCAB",
-            "KAkSEwoLZXhwaXJlX3RpbWUYBSABKAMSDwoHbWVzc2FnZRgGIAEoCSKeAgoM",
-            "RmlyZUV2ZW50UmVxEhAKCG9yaWdpbl94GAEgASgCEhAKCG9yaWdpbl95GAIg",
-            "ASgCEhAKCG9yaWdpbl96GAMgASgCEg0KBWRpcl94GAQgASgCEg0KBWRpcl95",
-            "GAUgASgCEg0KBWRpcl96GAYgASgCEg0KBWVuZF94GAcgASgCEg0KBWVuZF95",
-            "GAggASgCEg0KBWVuZF96GAkgASgCEhUKDWhpdF9zb21ldGhpbmcYCiABKAgS",
-            "FQoNaGl0X3BsYXllcl9pZBgLIAEoCRIUCgxoaXRfbm9ybWFsX3gYDCABKAIS",
-            "FAoMaGl0X25vcm1hbF95GA0gASgCEhQKDGhpdF9ub3JtYWxfehgOIAEoAhIO",
-            "CgZkYW1hZ2UYDyABKAUitAIKD0ZpcmVFdmVudE5vdGlmeRIRCglwbGF5ZXJf",
-            "aWQYASABKAkSEAoIb3JpZ2luX3gYAiABKAISEAoIb3JpZ2luX3kYAyABKAIS",
-            "EAoIb3JpZ2luX3oYBCABKAISDQoFZGlyX3gYBSABKAISDQoFZGlyX3kYBiAB",
-            "KAISDQoFZGlyX3oYByABKAISDQoFZW5kX3gYCCABKAISDQoFZW5kX3kYCSAB",
-            "KAISDQoFZW5kX3oYCiABKAISFQoNaGl0X3NvbWV0aGluZxgLIAEoCBIVCg1o",
-            "aXRfcGxheWVyX2lkGAwgASgJEhQKDGhpdF9ub3JtYWxfeBgNIAEoAhIUCgxo",
-            "aXRfbm9ybWFsX3kYDiABKAISFAoMaGl0X25vcm1hbF96GA8gASgCEg4KBmRh",
-            "bWFnZRgQIAEoBSI4ChBQbGF5ZXJEaWVkTm90aWZ5EhEKCXZpY3RpbV9pZBgB",
-            "IAEoCRIRCglraWxsZXJfaWQYAiABKAkqygMKBU1zZ0lEEgwKCE1TR19OT05F",
-            "EAASEQoNQzJTX0hlYXJ0QmVhdBABEhEKDVMyQ19IZWFydEJlYXQQAhISCg5D",
-            "MlNfQ3JlYXRlUm9vbRAKEhIKDlMyQ19DcmVhdGVSb29tEAsSEAoMQzJTX0pv",
-            "aW5Sb29tEAwSEAoMUzJDX0pvaW5Sb29tEA0SEQoNQzJTX0xlYXZlUm9vbRAO",
-            "EhEKDVMyQ19MZWF2ZVJvb20QDxITCg9DMlNfR2V0Um9vbUxpc3QQEBIQCgxT",
-            "MkNfUm9vbUxpc3QQERISCg5TMkNfUGxheWVySm9pbhASEhMKD1MyQ19QbGF5",
-            "ZXJMZWF2ZRATEhEKDUMyU19TdGFydEdhbWUQFBITCg9DMlNfUGxheWVySW5w",
-            "dXQQHhISCg5TMkNfRnJhbWVTdGF0ZRAfEhEKDVMyQ19HYW1lU3RhcnQQMhIQ",
-            "CgxTMkNfR2FtZU92ZXIQMxINCglDMlNfTG9naW4QRhINCglTMkNfTG9naW4Q",
-            "RxIRCg1DMlNfRmlyZUV2ZW50EFASEQoNUzJDX0ZpcmVFdmVudBBREhIKDkMy",
-            "U19QbGF5ZXJEaWVkEFISEgoOUzJDX1BsYXllckRpZWQQU2IGcHJvdG8z"));
+            "CiABKAISDwoHdmVoaWNsZRgPIAEoCRINCgVwb3NfeBgLIAEoAhINCgVwb3Nf",
+            "eRgMIAEoAhINCgVwb3NfehgNIAEoAhINCgVyb3RfeRgOIAEoAhI+CgpleHRy",
+            "YV9kYXRhGGMgAygLMiouR2FtZU5ldHdvcmsuUGxheWVySW5wdXRSZXEuRXh0",
+            "cmFEYXRhRW50cnkaMAoORXh0cmFEYXRhRW50cnkSCwoDa2V5GAEgASgJEg0K",
+            "BXZhbHVlGAIgASgJOgI4ASKPAQoLUGxheWVyU3RhdGUSDQoFcG9zX3gYASAB",
+            "KAISDQoFcG9zX3kYAiABKAISDQoFcG9zX3oYAyABKAISDQoFcm90X3kYBCAB",
+            "KAISEQoJaXNfZmlyaW5nGAUgASgIEhQKDGlzX3JlbG9hZGluZxgGIAEoCBIK",
+            "CgJocBgHIAEoBRIPCgdpc19kZWFkGAggASgIIokDCg5GcmFtZVN0YXRlUmVz",
+            "cBIQCghmcmFtZV9pZBgBIAEoDRITCgtzZXJ2ZXJfdGltZRgCIAEoAxJECg1w",
+            "bGF5ZXJfaW5wdXRzGAMgAygLMi0uR2FtZU5ldHdvcmsuRnJhbWVTdGF0ZVJl",
+            "c3AuUGxheWVySW5wdXRzRW50cnkSRAoNcGxheWVyX3N0YXRlcxgFIAMoCzIt",
+            "LkdhbWVOZXR3b3JrLkZyYW1lU3RhdGVSZXNwLlBsYXllclN0YXRlc0VudHJ5",
+            "EiYKBmV2ZW50cxgEIAMoCzIWLkdhbWVOZXR3b3JrLkdhbWVFdmVudBpNChFQ",
+            "bGF5ZXJJbnB1dHNFbnRyeRILCgNrZXkYASABKAkSJwoFdmFsdWUYAiABKAsy",
+            "GC5HYW1lTmV0d29yay5QbGF5ZXJJbnB1dDoCOAEaTQoRUGxheWVyU3RhdGVz",
+            "RW50cnkSCwoDa2V5GAEgASgJEicKBXZhbHVlGAIgASgLMhguR2FtZU5ldHdv",
+            "cmsuUGxheWVyU3RhdGU6AjgBIsoBCgtQbGF5ZXJJbnB1dBIRCglwbGF5ZXJf",
+            "aWQYASABKAkSDgoGbW92ZV94GAIgASgCEg4KBm1vdmVfeRgDIAEoAhIUCgxp",
+            "c19zcHJpbnRpbmcYBCABKAgSEQoJaXNfYWltaW5nGAUgASgIEgwKBGZpcmUY",
+            "BiABKAgSDgoGcmVsb2FkGAcgASgIEgwKBGp1bXAYCCABKAgSEAoIaW50ZXJh",
+            "Y3QYCSABKAgSEAoIcm90YXRpb24YCiABKAISDwoHdmVoaWNsZRgPIAEoCSKq",
+            "AQoJR2FtZUV2ZW50EhIKCmV2ZW50X3R5cGUYASABKAUSFQoNc291cmNlX3Bs",
+            "YXllchgCIAEoCRIVCg10YXJnZXRfcGxheWVyGAMgASgJEi4KBGRhdGEYBCAD",
+            "KAsyIC5HYW1lTmV0d29yay5HYW1lRXZlbnQuRGF0YUVudHJ5GisKCURhdGFF",
+            "bnRyeRILCgNrZXkYASABKAkSDQoFdmFsdWUYAiABKAk6AjgBIg4KDFN0YXJ0",
+            "R2FtZVJlcSI2Cg9HYW1lU3RhcnROb3RpZnkSDwoHcm9vbV9pZBgBIAEoCRIS",
+            "CgpzdGFydF90aW1lGAIgASgDIkQKDkdhbWVPdmVyTm90aWZ5Eg8KB3Jvb21f",
+            "aWQYASABKAkSEQoJd2lubmVyX2lkGAIgASgJEg4KBnJlYXNvbhgDIAEoBSIu",
+            "CghMb2dpblJlcRIQCgh1c2VybmFtZRgBIAEoCRIQCghwYXNzd29yZBgCIAEo",
+            "CSJ0CglMb2dpblJlc3ASDwoHc3VjY2VzcxgBIAEoCBIPCgd1c2VyX2lkGAIg",
+            "ASgJEhAKCHVzZXJuYW1lGAMgASgJEg0KBXRva2VuGAQgASgJEhMKC2V4cGly",
+            "ZV90aW1lGAUgASgDEg8KB21lc3NhZ2UYBiABKAkingIKDEZpcmVFdmVudFJl",
+            "cRIQCghvcmlnaW5feBgBIAEoAhIQCghvcmlnaW5feRgCIAEoAhIQCghvcmln",
+            "aW5fehgDIAEoAhINCgVkaXJfeBgEIAEoAhINCgVkaXJfeRgFIAEoAhINCgVk",
+            "aXJfehgGIAEoAhINCgVlbmRfeBgHIAEoAhINCgVlbmRfeRgIIAEoAhINCgVl",
+            "bmRfehgJIAEoAhIVCg1oaXRfc29tZXRoaW5nGAogASgIEhUKDWhpdF9wbGF5",
+            "ZXJfaWQYCyABKAkSFAoMaGl0X25vcm1hbF94GAwgASgCEhQKDGhpdF9ub3Jt",
+            "YWxfeRgNIAEoAhIUCgxoaXRfbm9ybWFsX3oYDiABKAISDgoGZGFtYWdlGA8g",
+            "ASgFIrQCCg9GaXJlRXZlbnROb3RpZnkSEQoJcGxheWVyX2lkGAEgASgJEhAK",
+            "CG9yaWdpbl94GAIgASgCEhAKCG9yaWdpbl95GAMgASgCEhAKCG9yaWdpbl96",
+            "GAQgASgCEg0KBWRpcl94GAUgASgCEg0KBWRpcl95GAYgASgCEg0KBWRpcl96",
+            "GAcgASgCEg0KBWVuZF94GAggASgCEg0KBWVuZF95GAkgASgCEg0KBWVuZF96",
+            "GAogASgCEhUKDWhpdF9zb21ldGhpbmcYCyABKAgSFQoNaGl0X3BsYXllcl9p",
+            "ZBgMIAEoCRIUCgxoaXRfbm9ybWFsX3gYDSABKAISFAoMaGl0X25vcm1hbF95",
+            "GA4gASgCEhQKDGhpdF9ub3JtYWxfehgPIAEoAhIOCgZkYW1hZ2UYECABKAUi",
+            "OAoQUGxheWVyRGllZE5vdGlmeRIRCgl2aWN0aW1faWQYASABKAkSEQoJa2ls",
+            "bGVyX2lkGAIgASgJKsoDCgVNc2dJRBIMCghNU0dfTk9ORRAAEhEKDUMyU19I",
+            "ZWFydEJlYXQQARIRCg1TMkNfSGVhcnRCZWF0EAISEgoOQzJTX0NyZWF0ZVJv",
+            "b20QChISCg5TMkNfQ3JlYXRlUm9vbRALEhAKDEMyU19Kb2luUm9vbRAMEhAK",
+            "DFMyQ19Kb2luUm9vbRANEhEKDUMyU19MZWF2ZVJvb20QDhIRCg1TMkNfTGVh",
+            "dmVSb29tEA8SEwoPQzJTX0dldFJvb21MaXN0EBASEAoMUzJDX1Jvb21MaXN0",
+            "EBESEgoOUzJDX1BsYXllckpvaW4QEhITCg9TMkNfUGxheWVyTGVhdmUQExIR",
+            "Cg1DMlNfU3RhcnRHYW1lEBQSEwoPQzJTX1BsYXllcklucHV0EB4SEgoOUzJD",
+            "X0ZyYW1lU3RhdGUQHxIRCg1TMkNfR2FtZVN0YXJ0EDISEAoMUzJDX0dhbWVP",
+            "dmVyEDMSDQoJQzJTX0xvZ2luEEYSDQoJUzJDX0xvZ2luEEcSEQoNQzJTX0Zp",
+            "cmVFdmVudBBQEhEKDVMyQ19GaXJlRXZlbnQQURISCg5DMlNfUGxheWVyRGll",
+            "ZBBSEhIKDlMyQ19QbGF5ZXJEaWVkEFNiBnByb3RvMw=="));
       descriptor = pbr::FileDescriptor.FromGeneratedCode(descriptorData,
           new pbr::FileDescriptor[] { },
           new pbr::GeneratedClrTypeInfo(new[] {typeof(global::GameNetwork.MsgID), }, null, new pbr::GeneratedClrTypeInfo[] {
@@ -123,10 +124,10 @@ namespace GameNetwork {
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerLeaveNotify), global::GameNetwork.PlayerLeaveNotify.Parser, new[]{ "PlayerId" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.RoomInfo), global::GameNetwork.RoomInfo.Parser, new[]{ "RoomId", "RoomName", "HostId", "MaxPlayers", "CurrentPlayers", "HasPassword", "IsPlaying", "Players" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInfo), global::GameNetwork.PlayerInfo.Parser, new[]{ "PlayerId", "PlayerName", "IsReady" }, null, null, null, null),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInputReq), global::GameNetwork.PlayerInputReq.Parser, new[]{ "FrameId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation", "PosX", "PosY", "PosZ", "RotY", "ExtraData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInputReq), global::GameNetwork.PlayerInputReq.Parser, new[]{ "FrameId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation", "Vehicle", "PosX", "PosY", "PosZ", "RotY", "ExtraData" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerState), global::GameNetwork.PlayerState.Parser, new[]{ "PosX", "PosY", "PosZ", "RotY", "IsFiring", "IsReloading", "Hp", "IsDead" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.FrameStateResp), global::GameNetwork.FrameStateResp.Parser, new[]{ "FrameId", "ServerTime", "PlayerInputs", "PlayerStates", "Events" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, null, }),
-            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInput), global::GameNetwork.PlayerInput.Parser, new[]{ "PlayerId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation" }, null, null, null, null),
+            new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.PlayerInput), global::GameNetwork.PlayerInput.Parser, new[]{ "PlayerId", "MoveX", "MoveY", "IsSprinting", "IsAiming", "Fire", "Reload", "Jump", "Interact", "Rotation", "Vehicle" }, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.GameEvent), global::GameNetwork.GameEvent.Parser, new[]{ "EventType", "SourcePlayer", "TargetPlayer", "Data" }, null, null, null, new pbr::GeneratedClrTypeInfo[] { null, }),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.StartGameReq), global::GameNetwork.StartGameReq.Parser, null, null, null, null, null),
             new pbr::GeneratedClrTypeInfo(typeof(global::GameNetwork.GameStartNotify), global::GameNetwork.GameStartNotify.Parser, new[]{ "RoomId", "StartTime" }, null, null, null, null),
@@ -3822,6 +3823,7 @@ namespace GameNetwork {
       jump_ = other.jump_;
       interact_ = other.interact_;
       rotation_ = other.rotation_;
+      vehicle_ = other.vehicle_;
       posX_ = other.posX_;
       posY_ = other.posY_;
       posZ_ = other.posZ_;
@@ -3986,6 +3988,22 @@ namespace GameNetwork {
       }
     }
 
+    /// <summary>Field number for the "vehicle" field.</summary>
+    public const int VehicleFieldNumber = 15;
+    private string vehicle_ = "";
+    /// <summary>
+    /// 载具配置名（对应 Data/vehicles.json 的 profile；hold-last，
+    /// 服务端首次收到时据此初始化该玩家的血量上限）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Vehicle {
+      get { return vehicle_; }
+      set {
+        vehicle_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     /// <summary>Field number for the "pos_x" field.</summary>
     public const int PosXFieldNumber = 11;
     private float posX_;
@@ -4086,6 +4104,7 @@ namespace GameNetwork {
       if (Jump != other.Jump) return false;
       if (Interact != other.Interact) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Rotation, other.Rotation)) return false;
+      if (Vehicle != other.Vehicle) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PosX, other.PosX)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PosY, other.PosY)) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(PosZ, other.PosZ)) return false;
@@ -4108,6 +4127,7 @@ namespace GameNetwork {
       if (Jump != false) hash ^= Jump.GetHashCode();
       if (Interact != false) hash ^= Interact.GetHashCode();
       if (Rotation != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Rotation);
+      if (Vehicle.Length != 0) hash ^= Vehicle.GetHashCode();
       if (PosX != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PosX);
       if (PosY != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PosY);
       if (PosZ != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(PosZ);
@@ -4187,6 +4207,10 @@ namespace GameNetwork {
         output.WriteRawTag(117);
         output.WriteFloat(RotY);
       }
+      if (Vehicle.Length != 0) {
+        output.WriteRawTag(122);
+        output.WriteString(Vehicle);
+      }
       extraData_.WriteTo(output, _map_extraData_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
@@ -4254,6 +4278,10 @@ namespace GameNetwork {
         output.WriteRawTag(117);
         output.WriteFloat(RotY);
       }
+      if (Vehicle.Length != 0) {
+        output.WriteRawTag(122);
+        output.WriteString(Vehicle);
+      }
       extraData_.WriteTo(ref output, _map_extraData_codec);
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
@@ -4294,6 +4322,9 @@ namespace GameNetwork {
       }
       if (Rotation != 0F) {
         size += 1 + 4;
+      }
+      if (Vehicle.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Vehicle);
       }
       if (PosX != 0F) {
         size += 1 + 4;
@@ -4349,6 +4380,9 @@ namespace GameNetwork {
       }
       if (other.Rotation != 0F) {
         Rotation = other.Rotation;
+      }
+      if (other.Vehicle.Length != 0) {
+        Vehicle = other.Vehicle;
       }
       if (other.PosX != 0F) {
         PosX = other.PosX;
@@ -4434,6 +4468,10 @@ namespace GameNetwork {
             RotY = input.ReadFloat();
             break;
           }
+          case 122: {
+            Vehicle = input.ReadString();
+            break;
+          }
           case 794: {
             extraData_.AddEntriesFrom(input, _map_extraData_codec);
             break;
@@ -4507,6 +4545,10 @@ namespace GameNetwork {
           }
           case 117: {
             RotY = input.ReadFloat();
+            break;
+          }
+          case 122: {
+            Vehicle = input.ReadString();
             break;
           }
           case 794: {
@@ -5364,6 +5406,7 @@ namespace GameNetwork {
       jump_ = other.jump_;
       interact_ = other.interact_;
       rotation_ = other.rotation_;
+      vehicle_ = other.vehicle_;
       _unknownFields = pb::UnknownFieldSet.Clone(other._unknownFields);
     }
 
@@ -5496,6 +5539,22 @@ namespace GameNetwork {
       }
     }
 
+    /// <summary>Field number for the "vehicle" field.</summary>
+    public const int VehicleFieldNumber = 15;
+    private string vehicle_ = "";
+    /// <summary>
+    /// 载具配置名（对应 Data/vehicles.json 的 profile；hold-last，
+    /// 首次上报时服务端据此初始化该玩家的血量上限）
+    /// </summary>
+    [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
+    [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
+    public string Vehicle {
+      get { return vehicle_; }
+      set {
+        vehicle_ = pb::ProtoPreconditions.CheckNotNull(value, "value");
+      }
+    }
+
     [global::System.Diagnostics.DebuggerNonUserCodeAttribute]
     [global::System.CodeDom.Compiler.GeneratedCode("protoc", null)]
     public override bool Equals(object other) {
@@ -5521,6 +5580,7 @@ namespace GameNetwork {
       if (Jump != other.Jump) return false;
       if (Interact != other.Interact) return false;
       if (!pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.Equals(Rotation, other.Rotation)) return false;
+      if (Vehicle != other.Vehicle) return false;
       return Equals(_unknownFields, other._unknownFields);
     }
 
@@ -5538,6 +5598,7 @@ namespace GameNetwork {
       if (Jump != false) hash ^= Jump.GetHashCode();
       if (Interact != false) hash ^= Interact.GetHashCode();
       if (Rotation != 0F) hash ^= pbc::ProtobufEqualityComparers.BitwiseSingleEqualityComparer.GetHashCode(Rotation);
+      if (Vehicle.Length != 0) hash ^= Vehicle.GetHashCode();
       if (_unknownFields != null) {
         hash ^= _unknownFields.GetHashCode();
       }
@@ -5596,6 +5657,10 @@ namespace GameNetwork {
         output.WriteRawTag(85);
         output.WriteFloat(Rotation);
       }
+      if (Vehicle.Length != 0) {
+        output.WriteRawTag(122);
+        output.WriteString(Vehicle);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(output);
       }
@@ -5646,6 +5711,10 @@ namespace GameNetwork {
         output.WriteRawTag(85);
         output.WriteFloat(Rotation);
       }
+      if (Vehicle.Length != 0) {
+        output.WriteRawTag(122);
+        output.WriteString(Vehicle);
+      }
       if (_unknownFields != null) {
         _unknownFields.WriteTo(ref output);
       }
@@ -5685,6 +5754,9 @@ namespace GameNetwork {
       }
       if (Rotation != 0F) {
         size += 1 + 4;
+      }
+      if (Vehicle.Length != 0) {
+        size += 1 + pb::CodedOutputStream.ComputeStringSize(Vehicle);
       }
       if (_unknownFields != null) {
         size += _unknownFields.CalculateSize();
@@ -5727,6 +5799,9 @@ namespace GameNetwork {
       }
       if (other.Rotation != 0F) {
         Rotation = other.Rotation;
+      }
+      if (other.Vehicle.Length != 0) {
+        Vehicle = other.Vehicle;
       }
       _unknownFields = pb::UnknownFieldSet.MergeFrom(_unknownFields, other._unknownFields);
     }
@@ -5783,6 +5858,10 @@ namespace GameNetwork {
             Rotation = input.ReadFloat();
             break;
           }
+          case 122: {
+            Vehicle = input.ReadString();
+            break;
+          }
         }
       }
     #endif
@@ -5836,6 +5915,10 @@ namespace GameNetwork {
           }
           case 85: {
             Rotation = input.ReadFloat();
+            break;
+          }
+          case 122: {
+            Vehicle = input.ReadString();
             break;
           }
         }

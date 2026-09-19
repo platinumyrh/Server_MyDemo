@@ -154,23 +154,27 @@ message PlayerInfo {
 // 玩家输入（客户端每帧发送）
 message PlayerInputReq {
     uint32 frame_id = 1;         // 帧ID（客户端预测的帧号）
-    
+
     // 移动输入
     float move_x = 2;            // 水平方向 (-1 到 1)
     float move_y = 3;            // 垂直方向 (-1 到 1)
-    
+
     // 操作输入
     bool is_sprinting = 4;       // 是否冲刺
     bool is_aiming = 5;          // 是否瞄准
-    
+
     // 动作输入
     bool fire = 6;               // 开火
     bool reload = 7;             // 换弹
     bool jump = 8;               // 跳跃
     bool interact = 9;           // 交互（拾取物品等）
-    
+
     // 视角旋转（用于瞄准方向）
     float rotation = 10;          // 角度（弧度）
+
+    // 载具配置名（对应 Data/vehicles.json 的 profile；hold-last，
+    // 服务端首次收到时据此初始化该玩家的血量上限）
+    string vehicle = 15;
 
     // 发送方的权威位置状态（本地 CharacterController 物理后的真实位置，
     // 服务端原样持有并广播给其他玩家做位置纠正）
@@ -222,6 +226,10 @@ message PlayerInput {
     bool jump = 8;
     bool interact = 9;
     float rotation = 10;
+
+    // 载具配置名（对应 Data/vehicles.json 的 profile；hold-last，
+    // 首次上报时服务端据此初始化该玩家的血量上限）
+    string vehicle = 15;
 }
 
 // 游戏事件（预留）

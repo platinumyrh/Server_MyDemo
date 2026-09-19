@@ -243,8 +243,8 @@ namespace Server_MyDemo.Server
                     // 🔑 生成会话Token
                     string token = GenerateSessionToken(result.User.UserId);
 
-                    // 🔑 登录成功后才添加到在线玩家列表
-                    _networkServer.AddPlayer(result.User.UserId, client);
+                    // 🔑 登录成功后才添加到在线玩家列表（登记昵称，供房间广播使用）
+                    _networkServer.AddPlayer(result.User.UserId, result.User.Nickname, client);
 
                     // 构建成功响应
                     var resp = new LoginResp
@@ -329,7 +329,7 @@ namespace Server_MyDemo.Server
             // 获取或创建玩家
             string playerId = GetOrCreatePlayer(client);
 
-            var result = _roomManager.CreateRoom(playerId, req.RoomName, req.Password, req.RoomId);
+            var result = _roomManager.CreateRoom(playerId, _networkServer.GetPlayerName(playerId), req.RoomName, req.Password, req.RoomId);
 
             var resp = new CreateRoomResp
             {
@@ -352,7 +352,7 @@ namespace Server_MyDemo.Server
             var req = JoinRoomReq.Parser.ParseFrom(data);
             string playerId = GetOrCreatePlayer(client);
 
-            var result = _roomManager.JoinRoom(playerId, req.RoomId, req.Password);
+            var result = _roomManager.JoinRoom(playerId, _networkServer.GetPlayerName(playerId), req.RoomId, req.Password);
 
             var resp = new JoinRoomResp
             {
@@ -436,9 +436,6 @@ namespace Server_MyDemo.Server
         {
             var req = FireEventReq.Parser.ParseFrom(data);
             string playerId = GetOrCreatePlayer(client);
-
-            // 探针：确认事件到达服务端
-            Console.WriteLine($"[GameServer] 🔫 收到开火事件 [{playerId}] hit={req.HitSomething} dmg={req.Damage} target={req.HitPlayerId}");
 
             // 死亡射手不能再开枪
             if (_frameSyncManager.IsPlayerDead(playerId)) return;

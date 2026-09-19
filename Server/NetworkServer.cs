@@ -180,11 +180,12 @@ namespace Server_MyDemo.Server
         /// </summary>
         /// <param name="playerId">玩家唯一ID（UserId）</param>
         /// <param name="endpoint">玩家网络端点</param>
-        public void AddPlayer(string playerId, IPEndPoint endpoint)
+        public void AddPlayer(string playerId, string playerName, IPEndPoint endpoint)
         {
             var player = new Player
             {
                 PlayerId = playerId,
+                PlayerName = playerName,
                 Endpoint = endpoint
             };
             player.Touch();
@@ -192,8 +193,18 @@ namespace Server_MyDemo.Server
             _players[playerId] = player;
             _endpointToPlayerId[endpoint.ToString()] = playerId;
 
-            Console.WriteLine($"[NetworkServer] ✅ 玩家上线: {playerId} ({endpoint})");
+            Console.WriteLine($"[NetworkServer] ✅ 玩家上线: {playerId} ({playerName}) ({endpoint})");
             Console.WriteLine($"[NetworkServer] 📊 当前在线: {_players.Count} 人");
+        }
+
+        /// <summary>
+        /// 获取玩家昵称（登录时登记；未知玩家返回其 ID）
+        /// </summary>
+        public string GetPlayerName(string playerId)
+        {
+            return _players.TryGetValue(playerId, out var player) && !string.IsNullOrEmpty(player.PlayerName)
+                ? player.PlayerName
+                : playerId;
         }
 
         /// <summary>
