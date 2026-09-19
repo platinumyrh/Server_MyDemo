@@ -56,6 +56,10 @@ namespace Server_MyDemo.Utils
         /// <summary>默认血量上限（开局初始化用；以后从载具配置读取）</summary>
         public const int DEFAULT_MAX_HP = 100;
 
+        /// <summary>SO/载具配置读取总闸：lockstep 接入后血量由各端 LogicWorld 结算，
+        /// 服务端不再按载具初始化血量，此路径暂时屏蔽（恢复改 true；阶段9 随旧链路移除）</summary>
+        private const bool VEHICLE_CONFIG_ENABLED = false;
+
         #endregion
 
         #region 构造函数
@@ -156,6 +160,7 @@ namespace Server_MyDemo.Utils
         /// </summary>
         private int ResolveVehicleMaxHp(string playerId, string vehicle)
         {
+            if (!VEHICLE_CONFIG_ENABLED) return -1; // 已屏蔽：不再加载 vehicles.json / 登记载具
             if (string.IsNullOrEmpty(vehicle)) return -1;
 
             var cfg = VehicleConfigStore.Get(vehicle);
