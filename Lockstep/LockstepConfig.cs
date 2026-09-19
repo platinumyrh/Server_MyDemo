@@ -67,8 +67,8 @@ namespace GameLockstep
         /// <summary>冲刺速度（米/逻辑帧）</summary>
         public const long SPRINT_SPEED_PER_TICK = 8 * FP.One / TICK_RATE;
 
-        /// <summary>转向速度（角刻度/逻辑帧）：65536/15 ≈ 一秒转一圈</summary>
-        public const int TURN_SPEED_PER_TICK = ANGLE_STEPS / TICK_RATE;
+        /// <summary>转向速度（角刻度/逻辑帧）：65536×3/15 ≈ 1080°/s，对齐旧链路跟手手感</summary>
+        public const int TURN_SPEED_PER_TICK = ANGLE_STEPS * 3 / TICK_RATE;
 
         /// <summary>跳跃初速度（米/逻辑帧，垂直）</summary>
         public const long JUMP_VELOCITY = 5 * FP.One / TICK_RATE;
