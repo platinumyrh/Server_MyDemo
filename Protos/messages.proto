@@ -42,6 +42,10 @@ enum MsgID {
     S2C_FireEvent = 81;        // 服务端 → 客户端：开火事件广播（房间内其他玩家）
     C2S_PlayerDied = 82;       // 客户端 → 服务端：死亡上报（受击方权威，血量归零时发送）
     S2C_PlayerDied = 83;       // 服务端 → 客户端：死亡广播（击杀归属、死亡表现）
+
+    // === lockstep 帧同步（新链路，与 30/31 状态同步并行，阶段9切换后旧链路下线）(90-99) ===
+    C2S_LockstepCommand = 90;  // 客户端 → 服务端：本地指令批量上报（未来几帧）
+    S2C_LockstepInputs = 91;   // 服务端 → 客户端：封帧后的全员指令广播（可多帧合包）
 }
 
 // ============================================
@@ -253,6 +257,17 @@ message StartGameReq {
 message GameStartNotify {
     string room_id = 1;          // 房间ID
     int64 start_time = 2;        // 开始时间戳
+
+    // ===== lockstep 初始化（新链路；旧客户端忽略未知字段，向后兼容）=====
+    uint64 lockstep_seed = 3;    // 逻辑世界 RNG 种子（全端一致）
+    int32 tick_rate = 4;         // 逻辑帧率（客户端校验不一致则拒进，防配置漂移）
+    repeated LockstepSeat seats = 5; // 座位表：string玩家ID → int座位号（逻辑世界PlayerId）
+}
+
+// 座位分配（GameStartNotify 携带，按加入顺序编号 0..N-1）
+message LockstepSeat {
+    string player_id = 1;        // 服务器玩家ID（登录/房间链路的 string ID）
+    int32 seat = 2;              // 逻辑世界座位号
 }
 
 // 游戏结束通知
@@ -346,4 +361,44 @@ message FireEventNotify {
 message PlayerDiedNotify {
     string victim_id = 1;        // 死亡玩家ID
     string killer_id = 2;        // 击杀者ID（自杀/环境伤害为空）
+}
+
+// ============================================
+// lockstep 帧同步（新链路）
+// 网上只传量化指令——位置/血量/开火结果全部由各端确定性模拟本地生成
+// ============================================
+
+// 单条玩家指令（字段与 GameLockstep.PlayerCommand 一一对应，全部整数）
+message LockstepCommandData {
+    int64 frame = 1;             // 生效帧号（= 产生帧 + INPUT_DELAY_FRAMES）
+    int32 move_x = 2;            // 世界空间移动轴 -127..127
+    int32 move_z = 3;            // 世界空间移动轴 -127..127
+    int32 aim_angle = 4;         // 瞄准/朝向环绕角 0..65535
+    uint32 buttons = 5;          // 按键位域 bit0=FIRE bit1=SPRINT bit2=RELOAD bit3=JUMP
+}
+
+// 指令上报（客户端按发送节流批量携带未来几帧的指令；服务器只中继不解读）
+message LockstepCommandReq {
+    repeated LockstepCommandData commands = 1;
+}
+
+// 封帧内的单条指令（带座位号标识归属）
+message LockstepPlayerCommand {
+    int32 seat = 1;              // 座位号（GameStartNotify 分配）
+    int32 move_x = 2;
+    int32 move_z = 3;
+    int32 aim_angle = 4;
+    uint32 buttons = 5;
+}
+
+// 一帧的封帧结果（该帧全员指令表）
+message LockstepFrameInputs {
+    int64 frame = 1;
+    repeated LockstepPlayerCommand commands = 2;
+}
+
+// 封帧广播（服务器收齐一帧全员指令后打包；UDP 下可多帧合包、可乱序到达，
+// 客户端 LockstepClient.OnAuthoritativeInputs 已容忍乱序/重复）
+message LockstepInputsNotify {
+    repeated LockstepFrameInputs frames = 1;
 }
