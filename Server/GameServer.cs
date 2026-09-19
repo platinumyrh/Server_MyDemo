@@ -2,11 +2,13 @@
 using Server_MyDemo.Utils;
 using System;
 using System.Collections.Generic;
+using System.Linq;
 using System.Net;
 using System.Net.Sockets;
 using System.Security.Cryptography;  // RandomNumberGenerator 所在命名空间
 using GameNetwork;  // 添加 Protobuf 命名空间
 using Google.Protobuf; // 添加 Google.Protobuf 命名空间
+using GameLockstep;    // LockstepConfig（逻辑帧率等常量）
 
 namespace Server_MyDemo.Server
 {
@@ -20,7 +22,8 @@ namespace Server_MyDemo.Server
 
         private NetworkServer _networkServer;       // 网络层（构造函数中创建，Start() 中开始监听）
         private RoomManager _roomManager;           // 房间管理器
-        private FrameSyncManager _frameSyncManager; // 帧同步管理器
+        private FrameSyncManager _frameSyncManager; // 帧同步管理器（旧状态同步链路，阶段9 下线）
+        private LockstepRelayManager _lockstepRelay;// lockstep 中继（新链路：只封帧广播，不持游戏状态）
         private AuthService _authService;           // 认证服务（用户登录验证）
         private bool _isRunning;                    // 服务器运行状态
 
@@ -44,6 +47,10 @@ namespace Server_MyDemo.Server
         {
             _roomManager = new RoomManager();
             _frameSyncManager = new FrameSyncManager(FRAME_RATE);
+            _lockstepRelay = new LockstepRelayManager();
+            // 封帧结果 → 房间广播（可能在网络线程/定时器线程触发，UDP Send 线程安全）
+            _lockstepRelay.FramesSealed += (roomId, notify) =>
+                BroadcastToRoom(roomId, notify, MsgID.S2CLockstepInputs);
 
             // 🔧 修复：使用项目根目录（.csproj 所在目录）作为数据目录
             // 避免 bin/Debug/net8.0/ 和项目根目录之间的路径混乱
@@ -89,6 +96,9 @@ namespace Server_MyDemo.Server
                 // 启动帧同步循环
                 _frameSyncManager.Start(_roomManager, _networkServer);
 
+                // 启动 lockstep 封帧泵（15Hz，新链路）
+                _lockstepRelay.Start();
+
                 // 启动心跳超时扫描
                 _timeoutTimer = new System.Threading.Timer(
                     _ => CheckTimeouts(),
@@ -120,6 +130,7 @@ namespace Server_MyDemo.Server
                 _timeoutTimer = null;
 
                 _frameSyncManager.Stop();
+                _lockstepRelay.Stop();
                 _networkServer.Stop();
                 Console.WriteLine("[GameServer] 服务器已停止");
             }
@@ -189,6 +200,11 @@ namespace Server_MyDemo.Server
                     // === 帧同步消息 ===
                     case MsgID.C2SPlayerInput:
                         HandlePlayerInput(clientEndpoint, data);
+                        break;
+
+                    // === lockstep 帧同步（新链路：指令中继）===
+                    case MsgID.C2SLockstepCommand:
+                        HandleLockstepCommand(clientEndpoint, data);
                         break;
 
                     // === 战斗事件 ===
@@ -397,6 +413,7 @@ namespace Server_MyDemo.Server
                 // 广播给房间内其他玩家
                 BroadcastPlayerLeave(req.RoomId, playerId);
                 _frameSyncManager.RemovePlayerState(playerId);
+                _lockstepRelay.RemovePlayer(req.RoomId, playerId); // 座位改补空，不卡帧
                 Console.WriteLine($"[GameServer] 玩家 [{playerId}] 离开房间 [{req.RoomId}]");
             }
         }
@@ -568,6 +585,14 @@ namespace Server_MyDemo.Server
                 StartTime = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds()
             };
 
+            // lockstep 新链路：分配座位（按加入顺序）与种子。
+            // 旧客户端忽略未知字段；新客户端据此构造初始 LogicWorld（种子+座位→出生点）
+            var playerIds = room.Players.Select(p => p.PlayerId).ToList();
+            var (seed, seats) = _lockstepRelay.StartGame(roomId!, playerIds);
+            notify.LockstepSeed = seed;
+            notify.TickRate = LockstepConfig.TICK_RATE;
+            notify.Seats.AddRange(seats);
+
             foreach (var player in room.Players)
             {
                 var endpoint = _networkServer.GetPlayerEndpoint(player.PlayerId);
@@ -578,6 +603,28 @@ namespace Server_MyDemo.Server
             }
 
             Console.WriteLine($"[GameServer] 玩家 [{playerId}] 开始游戏，房间 [{roomId}] 共 {room.Players.Count} 人");
+        }
+
+        #endregion
+
+        #region 消息处理器 - lockstep（新链路）
+
+        /// <summary>
+        /// 指令中继：登记到房间中继后立即尝试封帧（齐了就封，不等定时器）。
+        /// 服务器不解读指令内容——位置/血量/伤害全部由各端确定性模拟
+        /// </summary>
+        private void HandleLockstepCommand(IPEndPoint client, byte[] data)
+        {
+            var req = LockstepCommandReq.Parser.ParseFrom(data);
+            string playerId = GetOrCreatePlayer(client);
+
+            string? roomId = _roomManager.GetPlayerRoomId(playerId);
+            if (string.IsNullOrEmpty(roomId))
+            {
+                return; // 不在房间：静默丢弃（可能是离开瞬间在途的包）
+            }
+
+            _lockstepRelay.OnPlayerCommand(roomId!, playerId, req);
         }
 
         #endregion
@@ -619,6 +666,7 @@ namespace Server_MyDemo.Server
                 {
                     _roomManager.LeaveRoom(playerId, roomId);
                     BroadcastPlayerLeave(roomId, playerId);
+                    _lockstepRelay.RemovePlayer(roomId, playerId); // lockstep 座位改补空
                 }
 
                 // 2. 清理帧同步残留（输入缓冲、位置状态、校验记录）
