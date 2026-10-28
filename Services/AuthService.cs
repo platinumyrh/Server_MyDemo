@@ -10,7 +10,7 @@ using System.Text.Json.Serialization;
 // 🔧 修复 CS0103: 添加缺失的命名空间
 using System.Text.Encodings.Web;  // JavaScriptEncoder 所在命名空间
 
-namespace Server_MyDemo.Server
+namespace Server_MyDemo.Services
 {
     /// <summary>
     /// 用户认证服务
@@ -270,19 +270,6 @@ namespace Server_MyDemo.Server
         }
 
         /// <summary>
-        /// 根据UserId获取用户信息
-        /// </summary>
-        /// <param name="userId">用户唯一ID</param>
-        /// <returns>用户信息对象，如果不存在返回null</returns>
-        public UserInfo? GetUserById(string userId)
-        {
-            lock (_lock)
-            {
-                return _userData.Users.FirstOrDefault(u => u.UserId == userId);
-            }
-        }
-
-        /// <summary>
         /// 获取所有已加载的用户数量
         /// </summary>
         public int GetUserCount()
@@ -290,20 +277,6 @@ namespace Server_MyDemo.Server
             lock (_lock)
             {
                 return _userData.Users.Count;
-            }
-        }
-
-        /// <summary>
-        /// 检查用户名是否已存在
-        /// </summary>
-        /// <param name="username">要检查的用户名</param>
-        /// <returns>如果存在返回true</returns>
-        public bool IsUsernameExists(string username)
-        {
-            lock (_lock)
-            {
-                return _userData.Users.Any(u => 
-                    u.Username.Equals(username, StringComparison.OrdinalIgnoreCase));
             }
         }
 

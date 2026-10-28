@@ -4,7 +4,7 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 
-namespace Server_MyDemo.Utils
+namespace Server_MyDemo.Services
 {
     /// <summary>
     /// 单个房间的 lockstep 中继状态。
@@ -28,9 +28,6 @@ namespace Server_MyDemo.Utils
 
         /// 未封帧的指令缓冲：frame → (seat → cmd)，封完即删</summary>
         public readonly Dictionary<long, Dictionary<int, PlayerCommand>> Pending = new();
-
-        /// 统计：因迟到被丢弃的指令数（客户端预测回滚会自动校正，无需重发）</summary>
-        public long LateDropped;
 
         public LockstepRoomRelay(string roomId, ulong seed, long startMs, IReadOnlyList<string> playerIds)
         {
@@ -133,11 +130,12 @@ namespace Server_MyDemo.Utils
             return (seed, seats);
         }
 
-        public void StopGame(string roomId)
+        /// <summary>当前正在进行 lockstep 中继的房间数（状态展示用）</summary>
+        public int ActiveRoomCount
         {
-            lock (_gate)
+            get
             {
-                _relays.Remove(roomId);
+                lock (_gate) return _relays.Count;
             }
         }
 
@@ -181,10 +179,7 @@ namespace Server_MyDemo.Utils
                 foreach (var d in req.Commands)
                 {
                     if (d.Frame < relay.NextSealFrame)
-                    {
-                        relay.LateDropped++;
                         continue; // 已封帧，迟到指令丢弃——客户端回滚机制会消化
-                    }
                     if (d.Frame >= relay.NextSealFrame + MAX_FUTURE_WINDOW)
                         continue; // 过于超前的指令（异常/恶意），拒收
 

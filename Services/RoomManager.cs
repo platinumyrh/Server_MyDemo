@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetwork;  // 添加 GameNetwork 命名空间
 
-namespace Server_MyDemo.Server
+namespace Server_MyDemo.Services
 {
     /// <summary>
     /// 房间管理器

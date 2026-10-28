@@ -7,7 +7,7 @@ using System.Net;
 using System.Net.Sockets;
 using GameNetwork;  // 添加 GameNetwork 命名空间
 
-namespace Server_MyDemo.Server
+namespace Server_MyDemo.Network
 {
     /// <summary>
     /// 网络服务器 - UDP通信层
