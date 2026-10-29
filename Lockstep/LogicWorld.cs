@@ -8,7 +8,7 @@ namespace GameLockstep
     /// Tick 内固定顺序（全端必须一致，改动顺序 = 改协议）：
     ///   1. 按 PlayerId 升序逐个移动积分（缺指令 = 空指令，站桩）
     ///   2. 战斗结算（冷却/换弹/开火 hitscan/伤害/死亡，基于移动后的位置）
-    ///   3. 圆形碰撞互推（跑两轮缓解多人堆叠残留，配对顺序按 id 升序）
+    ///   3. 圆形碰撞互推（跑两轮缓解多人堆叠残留，配对顺序按 id 升序）→ 静态墙体推出
     ///   4. 世界边界钳制
     /// 输入延迟/本地预测/回滚重演（阶段3）在调用方完成——本类只消费"当前帧指令"，可重入重演
     /// </summary>
@@ -72,9 +72,10 @@ namespace GameLockstep
                 ProcessCombat(_players[i], cmd);
             }
 
-            // 3. 圆形碰撞互推
+            // 3. 圆形碰撞互推（两轮缓解多人堆叠残留），再处理静态墙体
             ResolveCollisions();
             ResolveCollisions();
+            ResolveWalls();
 
             // 4. 世界边界
             var limit = FP.FromRaw(LockstepConfig.WORLD_LIMIT);
@@ -121,12 +122,12 @@ namespace GameLockstep
                 return;
             }
 
-            // 开火：定点数 hitscan——沿朝向的射线对其他存活玩家做圆形相交，最近者受击
+            // 开火：定点数 hitscan——先查墙，再沿朝向对其他存活玩家做圆形相交，最近者受击
             p.Ammo--;
             p.FireCooldownTicks = LockstepConfig.FIRE_COOLDOWN_TICKS;
 
             var dir = FPTrig.Dir(p.Yaw);
-            var target = Hitscan(p, dir, out var hitX, out var hitZ);
+            var target = Hitscan(p, dir, out var hitX, out var hitZ, out var hitWall, out var hitNX, out var hitNZ);
 
             var fired = new LogicEvent//添加一个开火事件到事件列表
             {
@@ -140,6 +141,9 @@ namespace GameLockstep
                 DirZ = dir.Z,
                 HitX = hitX,
                 HitZ = hitZ,
+                HitWall = hitWall,
+                HitNX = hitNX,
+                HitNZ = hitNZ,
                 Damage = target != null ? LockstepConfig.DAMAGE_PER_HIT : 0,
             };
             _tickEvents.Add(fired);
@@ -178,20 +182,28 @@ namespace GameLockstep
         }
 
         /// <summary>
-        /// 定点 hitscan：从射手位置沿 dir 的射线（射程 MAX_RANGE）检测其他存活玩家圆。
-        /// 命中点为圆心在射线上的最近投影点；距离相同取 PlayerId 靠前者（确定性平手规则）
+        /// 定点 hitscan：射线（射程 MAX_RANGE）先与静态墙体相交，再检测其他存活玩家圆。
+        /// 玩家命中点为圆心在射线上的最近投影点；距离相同取 PlayerId 靠前者（确定性平手规则）。
+        /// 墙挡住时 hitWall=true，HitX/HitZ 为墙面交点、HitNX/HitNZ 为墙面法线
         /// </summary>
-        private LogicPlayer Hitscan(LogicPlayer shooter, FPVector2 dir, out FP hitX, out FP hitZ)
+        private LogicPlayer Hitscan(LogicPlayer shooter, FPVector2 dir,
+                                    out FP hitX, out FP hitZ,
+                                    out bool hitWall, out FP hitNX, out FP hitNZ)
         {
             long rangeRaw = LockstepConfig.MAX_RANGE;
+            var range = FP.FromRaw(rangeRaw);
             long radiusSqRaw = LockstepConfig.PLAYER_RADIUS * LockstepConfig.PLAYER_RADIUS; // 值×2^32 域
 
-            // 未命中默认：射程终点（表现层弹道终点）
-            hitX = shooter.X + dir.X * FP.FromRaw(rangeRaw);
-            hitZ = shooter.Z + dir.Z * FP.FromRaw(rangeRaw);
+            // 墙先算：打不穿，墙后的玩家不吃伤害
+            var wallT = LogicArena.RaycastWalls(shooter.X, shooter.Z, dir, range, out hitNX, out hitNZ);
+            hitWall = wallT < range;
+
+            // 默认终点：撞墙点（有墙）或射程尽头（没墙）
+            hitX = shooter.X + dir.X * wallT;
+            hitZ = shooter.Z + dir.Z * wallT;
 
             LogicPlayer best = null;
-            long bestTRaw = rangeRaw;
+            long bestTRaw = hitWall ? wallT.Raw : rangeRaw;
 
             for (int i = 0; i < _players.Count; i++)
             {
@@ -199,7 +211,7 @@ namespace GameLockstep
                 if (t == shooter || t.IsDead) continue; // 死者不挡弹（穿透）
 
                 var proj = (t.X - shooter.X) * dir.X + (t.Z - shooter.Z) * dir.Z; // 沿射线距离
-                if (proj.Raw < 0 || proj.Raw > rangeRaw) continue;                // 背后或超射程
+                if (proj.Raw < 0 || proj.Raw > bestTRaw) continue;                // 背后、超射程或被墙挡住
 
                 var closestX = shooter.X + dir.X * proj;
                 var closestZ = shooter.Z + dir.Z * proj;
@@ -214,7 +226,29 @@ namespace GameLockstep
                     hitZ = closestZ;
                 }
             }
+
+            if (best != null) // 打中人：终点挪到人身上，墙的法线作废
+            {
+                hitWall = false;
+                hitNX = new FP(0);
+                hitNZ = new FP(0);
+            }
             return best;
+        }
+
+        /// <summary>
+        /// 静态墙体推出：放在互推之后，防止被同伴挤进墙里。
+        /// 墙体是轴对齐盒子集合（LogicArena.Walls），全是定点数运算
+        /// </summary>
+        private void ResolveWalls()
+        {
+            var radius = FP.FromRaw(LockstepConfig.PLAYER_RADIUS);
+            for (int i = 0; i < _players.Count; i++)
+            {
+                var p = _players[i];
+                for (int w = 0; w < LogicArena.Walls.Length; w++)
+                    LogicArena.ResolveCircle(LogicArena.Walls[w], ref p.X, ref p.Z, radius);
+            }
         }
 
         /// <summary>

@@ -112,12 +112,13 @@ namespace Server_MyDemo.Services
             _clock = clock ?? (() => DateTimeOffset.UtcNow.ToUnixTimeMilliseconds());
         }
 
-        /// 开局：分配座位（按加入顺序）与种子。重复开始（重开局）会重置中继</summary>
-        public (ulong Seed, List<LockstepSeat> Seats) StartGame(string roomId, IReadOnlyList<string> playerIds)
+        /// 开局：分配座位（按加入顺序）与种子。重复开始（重开局）会重置中继。
+        /// startMs = 约定的开赛时刻（0 = 立即），封帧时钟从这一刻起算</summary>
+        public (ulong Seed, List<LockstepSeat> Seats) StartGame(string roomId, IReadOnlyList<string> playerIds, long startMs = 0)
         {
             ulong seed = unchecked((ulong)(Environment.TickCount64 * 2654435761L) | 1UL);
-            long now = _clock();
-            var relay = new LockstepRoomRelay(roomId, seed, now, playerIds);
+            long startAt = startMs > 0 ? startMs : _clock();
+            var relay = new LockstepRoomRelay(roomId, seed, startAt, playerIds);
 
             var seats = new List<LockstepSeat>(playerIds.Count);
             for (int i = 0; i < playerIds.Count; i++)

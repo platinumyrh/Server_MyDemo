@@ -27,6 +27,10 @@ namespace GameLockstep
         /// <summary>服务端等齐一帧指令的超时（毫秒）：超时用空指令补齐推进（不卡全场）</summary>
         public const int FRAME_TIMEOUT_MS = 200;
 
+        /// <summary>开赛宽限（毫秒）：客户端收到 GameStart 后还要加载场景、建好会话才开始收发，
+        /// 封帧时钟定在这之后，避免早封的帧被慢客户端错过</summary>
+        public const int START_GRACE_MS = 3000;
+
         /// <summary>状态哈希校验间隔（逻辑帧）：每 N 帧全量哈希一次用于漂移比对</summary>
         public const int HASH_INTERVAL = 45; // 15Hz 下每 3 秒
 
@@ -53,7 +57,7 @@ namespace GameLockstep
         // ===== 世界尺度（单位：定点数·米） =====
 
         /// <summary>玩家碰撞半径（米）</summary>
-        public const long PLAYER_RADIUS = FP.One / 2;
+        public const long PLAYER_RADIUS = FP.One * 3 / 5;
 
         /// <summary>世界边界（±米，玩家活动范围硬限制，防逃逸）</summary>
         public const long WORLD_LIMIT = 500 * FP.One;
