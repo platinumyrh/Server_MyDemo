@@ -24,6 +24,11 @@ namespace GameLockstep
         public int FireCooldownTicks; // 距下次可开火
         public int ReloadTicksLeft;   // 换弹剩余
         public bool IsDead;
+        public int RespawnTicksLeft;  // 死亡后剩余等待帧数，归零即复活
+
+        // ===== 计分（跨命累计，复活不清零）=====
+        public int Kills;
+        public int Deaths;
 
         public bool IsGrounded => Y.Raw == LockstepConfig.GROUND_Y && VerticalVelocity.Raw == 0;
 
@@ -75,6 +80,26 @@ namespace GameLockstep
                 : LockstepConfig.WALK_SPEED_PER_TICK);
             X += input.X * speed;
             Z += input.Z * speed;
+        }
+
+        /// <summary>
+        /// 复活：回到出生点并重置战斗状态。出生点/朝向由调用方算好，
+        /// 本方法只负责落数和清状态，保证各端做的是同一件事
+        /// </summary>
+        public void Respawn(FP x, FP z, int yaw)
+        {
+            X = x;
+            Z = z;
+            Y = FP.FromRaw(LockstepConfig.GROUND_Y);
+            VerticalVelocity = new FP(0);
+            Yaw = yaw & FPAngle.MASK;
+
+            Hp = MaxHp;
+            Ammo = LockstepConfig.MAGAZINE_SIZE;
+            FireCooldownTicks = 0;
+            ReloadTicksLeft = 0;
+            IsDead = false;
+            RespawnTicksLeft = 0;
         }
 
         private static int ClampAxis(int v)

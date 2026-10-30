@@ -92,6 +92,9 @@ namespace GameLockstep
         /// <summary>换弹耗时（逻辑帧）</summary>
         public const int RELOAD_TICKS = 23; // ≈1.5s
 
+        /// <summary>死亡到复活的等待（逻辑帧）：3 秒</summary>
+        public const int RESPAWN_TICKS = TICK_RATE * 3;
+
         /// <summary>最大射程（米）</summary>
         public const long MAX_RANGE = 50 * FP.One;
 

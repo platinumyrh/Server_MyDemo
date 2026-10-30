@@ -27,5 +27,8 @@ namespace GameLockstep
         internal int FireCooldownTicks;
         internal int ReloadTicksLeft;
         internal bool IsDead;
+        internal int RespawnTicksLeft;
+        internal int Kills;
+        internal int Deaths;
     }
 }

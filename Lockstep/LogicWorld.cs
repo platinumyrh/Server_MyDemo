@@ -58,6 +58,9 @@ namespace GameLockstep
             Frame++;
             _tickEvents.Clear();
 
+            // 0. 复活计时（在移动/战斗之前：复活当帧就能响应指令）
+            ProcessRespawns();
+
             // 1. 移动积分（缺指令按空指令处理，不卡帧）
             for (int i = 0; i < _players.Count; i++)
             {
@@ -170,6 +173,9 @@ namespace GameLockstep
             {
                 target.Hp = 0;
                 target.IsDead = true;
+                target.RespawnTicksLeft = LockstepConfig.RESPAWN_TICKS;
+                target.Deaths++;
+                p.Kills++;
                 _tickEvents.Add(new LogicEvent//添加一个死亡事件到事件列表
                 {
                     Type = LogicEventType.Died,
@@ -234,6 +240,36 @@ namespace GameLockstep
                 hitNZ = new FP(0);
             }
             return best;
+        }
+
+        /// <summary>
+        /// 死亡计时与复活：死亡只冻结该玩家的行为，计时照常推进。
+        /// 归零后回到座位出生点（确定性），并立即做一次墙体推出——
+        /// 座位 0 的出生点与地图斜墙相交，先推出再进入移动/战斗，避免复活瞬间卡在墙里。
+        /// </summary>
+        private void ProcessRespawns()
+        {
+            var radius = FP.FromRaw(LockstepConfig.PLAYER_RADIUS);
+            int spawnStep = LockstepConfig.ANGLE_STEPS / 8;
+
+            for (int i = 0; i < _players.Count; i++)
+            {
+                var p = _players[i];
+                if (!p.IsDead) continue;
+
+                if (p.RespawnTicksLeft > 0)
+                {
+                    p.RespawnTicksLeft--;
+                    if (p.RespawnTicksLeft > 0) continue;
+                }
+
+                GetSpawnPoint(p.PlayerId, out var x, out var z);
+                int yaw = (p.PlayerId * spawnStep + LockstepConfig.ANGLE_STEPS / 2) & FPAngle.MASK; // 面朝场地中心
+                p.Respawn(x, z, yaw);
+
+                for (int w = 0; w < LogicArena.Walls.Length; w++)
+                    LogicArena.ResolveCircle(LogicArena.Walls[w], ref p.X, ref p.Z, radius);
+            }
         }
 
         /// <summary>
@@ -324,6 +360,9 @@ namespace GameLockstep
                     FireCooldownTicks = p.FireCooldownTicks,
                     ReloadTicksLeft = p.ReloadTicksLeft,
                     IsDead = p.IsDead,
+                    RespawnTicksLeft = p.RespawnTicksLeft,
+                    Kills = p.Kills,
+                    Deaths = p.Deaths,
                 };
             }
             return new LogicWorldSnapshot { Frame = Frame, RngState = Rng.State, Players = players };
@@ -353,6 +392,9 @@ namespace GameLockstep
                 p.FireCooldownTicks = s.FireCooldownTicks;
                 p.ReloadTicksLeft = s.ReloadTicksLeft;
                 p.IsDead = s.IsDead;
+                p.RespawnTicksLeft = s.RespawnTicksLeft;
+                p.Kills = s.Kills;
+                p.Deaths = s.Deaths;
             }
             Frame = snapshot.Frame;
             Rng.Restore(snapshot.RngState);
@@ -373,6 +415,9 @@ namespace GameLockstep
                 h = Mix(h, p.Hp);
                 h = Mix(h, p.Ammo);
                 h = Mix(h, p.IsDead ? 1 : 0);
+                h = Mix(h, p.RespawnTicksLeft);
+                h = Mix(h, p.Kills);
+                h = Mix(h, p.Deaths);
             }
             return h;
         }
