@@ -1,4 +1,4 @@
-namespace GameLockstep
+﻿namespace GameLockstep
 {
     /// <summary>
     /// 帧同步全局常量（阶段0决策的落地）

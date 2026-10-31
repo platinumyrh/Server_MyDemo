@@ -132,9 +132,9 @@ namespace Server_MyDemo.Handlers
             // 座位按房间加入顺序分配；种子与座位表随 GameStart 下发，各端据此构造 LogicWorld。
             // 开赛时刻留出加载宽限：客户端要先进 Main 场景建好会话才能收发指令，
             // 封帧时钟与客户端帧号都从同一个 StartTime 起算
-            var playerIds = room.Players.Select(p => p.PlayerId).ToList();
+            var players = room.Players.Select(p => (p.PlayerId, p.PlayerName)).ToList();
             long startMs = DateTimeOffset.UtcNow.ToUnixTimeMilliseconds() + LockstepConfig.START_GRACE_MS;
-            var (seed, seats) = _server.Lockstep.StartGame(roomId!, playerIds, startMs);
+            var (seed, seats) = _server.Lockstep.StartGame(roomId!, players, startMs);
 
             var notify = new GameStartNotify
             {

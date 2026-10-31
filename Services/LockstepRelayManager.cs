@@ -20,8 +20,18 @@ namespace Server_MyDemo.Services
         /// playerId → 座位号（GameStart 时按加入顺序分配 0..N-1，全端一致）</summary>
         public readonly Dictionary<string, int> PlayerSeats = new();
 
+        /// playerId → 昵称（重连端要靠它把名牌补回来）</summary>
+        public readonly Dictionary<string, string> PlayerNames = new();
+
         /// 掉线/离开玩家的座位：封帧时对这些座位补空指令，不卡全场</summary>
         public readonly HashSet<int> DroppedSeats = new();
+
+        /// 正在重连的座位：加载 Main / 灌历史期间保留中继，历史发完才恢复收指令
+        public readonly HashSet<int> ResyncingSeats = new();
+        public readonly Dictionary<int, long> ResyncSinceMs = new();
+
+        /// 全员掉线的起始时刻（0 = 有人在场）；宽限期后才移除中继，留给重连
+        public long AllDroppedAtMs;
 
         /// 下一个待封帧号</summary>
         public long NextSealFrame = 1;
@@ -29,13 +39,22 @@ namespace Server_MyDemo.Services
         /// 未封帧的指令缓冲：frame → (seat → cmd)，封完即删</summary>
         public readonly Dictionary<long, Dictionary<int, PlayerCommand>> Pending = new();
 
-        public LockstepRoomRelay(string roomId, ulong seed, long startMs, IReadOnlyList<string> playerIds)
+        /// <summary>整局权威帧日志：重连端从头快进用（封帧即追加，封帧结果对象不再修改）</summary>
+        public readonly List<LockstepFrameInputs> History = new();
+
+        /// <summary>权威帧录像（写盘失败时为 null，不影响对局）</summary>
+        public ReplayRecorder? Recorder;
+
+        public LockstepRoomRelay(string roomId, ulong seed, long startMs, IReadOnlyList<(string Id, string Name)> players)
         {
             RoomId = roomId;
             Seed = seed;
             StartMs = startMs;
-            for (int i = 0; i < playerIds.Count; i++)
-                PlayerSeats[playerIds[i]] = i;
+            for (int i = 0; i < players.Count; i++)
+            {
+                PlayerSeats[players[i].Id] = i;
+                PlayerNames[players[i].Id] = players[i].Name;
+            }
         }
 
         /// <summary>帧到期判定：墙钟超过该帧的封帧期限（帧时隙 + 超时宽限）。
@@ -86,6 +105,16 @@ namespace Server_MyDemo.Services
         }
     }
 
+    /// <summary>重连所需的开局信息快照（座位表含昵称）</summary>
+    public sealed class ReconnectSnapshot
+    {
+        public string RoomId = "";
+        public ulong Seed;
+        public long StartMs;
+        public long LatestFrame;
+        public readonly List<(string Id, string Name, int Seat)> Seats = new();
+    }
+
     /// <summary>
     /// lockstep 中继管理器：房间中继表 + 15Hz 封帧泵。
     /// 封帧规则（与客户端协议自测沙盒同一条规则）：
@@ -97,6 +126,12 @@ namespace Server_MyDemo.Services
     {
         /// 允许客户端提前提交的最大帧窗口（防错位/刷包；2 帧输入延迟下正常余量）</summary>
         private const long MAX_FUTURE_WINDOW = 64;
+
+        /// 重连端加载 Main / 建视图的等待上限；超时按掉线处理，避免中继永远留着
+        private const int RECONNECT_READY_TIMEOUT_MS = 15000;
+
+        /// 全员掉线后中继的保留时长：留出重连窗口，超时才回收
+        private const int RECONNECT_GRACE_MS = 30000;
 
         private readonly Dictionary<string, LockstepRoomRelay> _relays = new();
         private readonly object _gate = new();
@@ -113,19 +148,36 @@ namespace Server_MyDemo.Services
         }
 
         /// 开局：分配座位（按加入顺序）与种子。重复开始（重开局）会重置中继。
-        /// startMs = 约定的开赛时刻（0 = 立即），封帧时钟从这一刻起算</summary>
-        public (ulong Seed, List<LockstepSeat> Seats) StartGame(string roomId, IReadOnlyList<string> playerIds, long startMs = 0)
+        /// startMs = 约定的开赛时刻（0 = 立即），封帧时钟从这一刻起算
+        /// 同时按种子/座位建一份录像，边封帧边落盘
+        /// </summary>
+        public (ulong Seed, List<LockstepSeat> Seats) StartGame(string roomId, IReadOnlyList<(string Id, string Name)> players, long startMs = 0)
         {
             ulong seed = unchecked((ulong)(Environment.TickCount64 * 2654435761L) | 1UL);
             long startAt = startMs > 0 ? startMs : _clock();
-            var relay = new LockstepRoomRelay(roomId, seed, startAt, playerIds);
 
-            var seats = new List<LockstepSeat>(playerIds.Count);
-            for (int i = 0; i < playerIds.Count; i++)
-                seats.Add(new LockstepSeat { PlayerId = playerIds[i], Seat = i });
+            var relay = new LockstepRoomRelay(roomId, seed, startAt, players);
+            try
+            {
+                relay.Recorder = new ReplayRecorder(roomId, seed, LockstepConfig.TICK_RATE, players);
+                Console.WriteLine($"[Replay] 💾 开始录制: {relay.Recorder.FilePath}");
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Replay] ⚠️ 录像创建失败（对局继续）: {ex.Message}");
+            }
+
+            var seats = new List<LockstepSeat>(players.Count);
+            for (int i = 0; i < players.Count; i++)
+                seats.Add(new LockstepSeat { PlayerId = players[i].Id, Seat = i });
 
             lock (_gate)
             {
+                if (_relays.TryGetValue(roomId, out var old))
+                {
+                    old.Recorder?.Dispose();
+                    old.Recorder = null;
+                }
                 _relays[roomId] = relay;
             }
             return (seed, seats);
@@ -151,6 +203,63 @@ namespace Server_MyDemo.Services
             }
         }
 
+        /// <summary>
+        /// 客户端登录后询问：我在哪个未结束的对局里？
+        /// 找到就标记“重连中”——全员掉线时中继先别回收，等客户端回来。
+        /// </summary>
+        public bool TryBuildReconnectInfo(string playerId, out ReconnectSnapshot? snapshot)
+        {
+            snapshot = null;
+            lock (_gate)
+            {
+                foreach (var relay in _relays.Values)
+                {
+                    if (!relay.PlayerSeats.TryGetValue(playerId, out var seat)) continue;
+
+                    relay.ResyncingSeats.Add(seat);
+                    relay.ResyncSinceMs[seat] = _clock();
+
+                    var snap = new ReconnectSnapshot
+                    {
+                        RoomId = relay.RoomId,
+                        Seed = relay.Seed,
+                        StartMs = relay.StartMs,
+                        LatestFrame = relay.NextSealFrame - 1,
+                    };
+                    foreach (var kv in relay.PlayerSeats)
+                    {
+                        string name = relay.PlayerNames.TryGetValue(kv.Key, out var n) ? n : kv.Key;
+                        snap.Seats.Add((kv.Key, name, kv.Value));
+                    }
+                    snap.Seats.Sort((a, b) => a.Seat.CompareTo(b.Seat));
+
+                    snapshot = snap;
+                    return true;
+                }
+                return false;
+            }
+        }
+
+        /// <summary>重连端 Main 就绪：持锁把整局历史交给调用方发出去，发完恢复座位收指令。
+        /// 持锁是为了保证“历史快照之后不会再有帧被封进来”——之后封的帧会正常广播。</summary>
+        public bool SendReconnectHistory(string roomId, string playerId,
+                                         Action<IReadOnlyList<LockstepFrameInputs>> sendHistory)
+        {
+            lock (_gate)
+            {
+                if (!_relays.TryGetValue(roomId, out var relay)) return false;
+                if (!relay.PlayerSeats.TryGetValue(playerId, out var seat)) return false;
+
+                sendHistory(relay.History);
+
+                relay.DroppedSeats.Remove(seat);
+                relay.ResyncingSeats.Remove(seat);
+                relay.ResyncSinceMs.Remove(seat);
+                relay.AllDroppedAtMs = 0;
+                return true;
+            }
+        }
+
         /// 启动封帧泵（15Hz）</summary>
         public void Start()
         {
@@ -165,7 +274,15 @@ namespace Server_MyDemo.Services
         {
             _sealTimer?.Dispose();
             _sealTimer = null;
-            lock (_gate) _relays.Clear();
+            lock (_gate)
+            {
+                foreach (var relay in _relays.Values)
+                {
+                    relay.Recorder?.Dispose();
+                    relay.Recorder = null;
+                }
+                _relays.Clear();
+            }
         }
 
         /// 收到某玩家的指令批量：登记后立即尝试封帧（齐了就封，不等定时器——降低封帧延迟）</summary>
@@ -218,25 +335,81 @@ namespace Server_MyDemo.Services
             foreach (var kv in _relays)
             {
                 var relay = kv.Value;
+
+                // 重连端迟迟不就绪（关客户端/卡加载）：放弃重连，按掉线处理
+                if (relay.ResyncSinceMs.Count > 0)
+                {
+                    List<int>? expired = null;
+                    foreach (var r in relay.ResyncSinceMs)
+                        if (nowMs - r.Value > RECONNECT_READY_TIMEOUT_MS) (expired ??= new List<int>()).Add(r.Key);
+                    if (expired != null)
+                        foreach (int seat in expired)
+                        {
+                            relay.ResyncSinceMs.Remove(seat);
+                            relay.ResyncingSeats.Remove(seat);
+                            relay.DroppedSeats.Add(seat);
+                        }
+                }
+
                 var notify = new LockstepInputsNotify();
                 while (true)
                 {
                     long f = relay.NextSealFrame;
                     if (relay.AllPresent(f) || relay.IsDue(f, nowMs))
-                        notify.Frames.Add(relay.Seal(f));
+                    {
+                        var frame = relay.Seal(f);
+                        relay.History.Add(frame);
+                        notify.Frames.Add(frame);
+                        RecordFrame(relay, frame);
+                    }
                     else
                         break;
                 }
                 if (notify.Frames.Count > 0)
                     (result ??= new List<(string, LockstepInputsNotify)>()).Add((kv.Key, notify));
 
-                // 全员掉线：把已到齐/到期的帧封完，然后移除（房间空了，游戏事实上结束）
-                if (relay.PlayerSeats.Count > 0 && relay.PlayerSeats.Count == relay.DroppedSeats.Count)
-                    (finished ??= new List<string>()).Add(kv.Key);
+                // 全员掉线：宽限期后才移除中继（留出重连窗口）。重连中的座位不算“走光”
+                bool allDropped = relay.PlayerSeats.Count > 0
+                                  && relay.PlayerSeats.Count == relay.DroppedSeats.Count
+                                  && relay.ResyncingSeats.Count == 0;
+                if (allDropped)
+                {
+                    if (relay.AllDroppedAtMs == 0) relay.AllDroppedAtMs = nowMs;
+                    else if (nowMs - relay.AllDroppedAtMs >= RECONNECT_GRACE_MS)
+                        (finished ??= new List<string>()).Add(kv.Key);
+                }
+                else
+                {
+                    relay.AllDroppedAtMs = 0;
+                }
             }
             if (finished != null)
-                foreach (var roomId in finished) _relays.Remove(roomId);
+                foreach (var roomId in finished)
+                {
+                    if (_relays.TryGetValue(roomId, out var relay))
+                    {
+                        relay.Recorder?.Dispose();
+                        relay.Recorder = null;
+                    }
+                    _relays.Remove(roomId);
+                }
             return result;
+        }
+
+        /// <summary>封帧即落盘；IO 出错就关掉该房间的录像，不拖累封帧</summary>
+        private static void RecordFrame(LockstepRoomRelay relay, LockstepFrameInputs frame)
+        {
+            if (relay.Recorder == null) return;
+            try
+            {
+                relay.Recorder.Append(frame);
+            }
+            catch (Exception ex)
+            {
+                Console.WriteLine($"[Replay] ⚠️ 写录像失败，停止录制: {ex.Message}");
+                relay.Recorder.Dispose();
+                relay.Recorder = null;
+            }
         }
 
         private void Raise(List<(string, LockstepInputsNotify)>? batches)

@@ -1,4 +1,4 @@
-namespace GameLockstep
+﻿namespace GameLockstep
 {
     /// <summary>
     /// 确定性静态几何：带朝向的盒子（OBB，只看 XZ 平面），负责遮挡弹道和阻挡走位。
@@ -71,10 +71,10 @@ namespace GameLockstep
         /// <summary>Main 场景里的全部墙体（Y 方向忽略：子弹始终在墙体高度范围内）</summary>
         public static readonly Box2[] Walls =
         {
-            // Wall：Enviroment(0,-0.5,0) 下，本地位置 (-6.83, 1.93, 2.05)，
-            //       缩放 (23.451479, 3.1118, 1)，绕 Y 偏转 138.32°
-            Box2.FromCenterSize(-6.83f, 2.05f, 23.451479f, 1f, 138.32f),
+            // Wall: y -0.13~2.99，yaw 138.32°
+            Box2.FromCenterSize(-9.1400f, 2.0500f, 23.4515f, 1.0000f, 138.32f),
         };
+
 
         /// <summary>
         /// 射线 vs 全部墙体。返回最近命中距离（Q16.16），未命中返回 maxT。

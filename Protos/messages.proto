@@ -36,6 +36,10 @@ enum MsgID {
     // === lockstep 帧同步 (90-99) ===
     C2S_LockstepCommand = 90;  // 客户端 → 服务端：本地指令批量上报（未来几帧）
     S2C_LockstepInputs = 91;   // 服务端 → 客户端：封帧后的全员指令广播（可多帧合包）
+    C2S_Reconnect = 92;        // 客户端 → 服务端：询问自己是否有可恢复的对局
+    S2C_ReconnectInfo = 93;    // 服务端 → 客户端：对局信息（种子/座位/历史范围）
+    C2S_ReconnectReady = 94;   // 客户端 → 服务端：Main 场景已就绪，请发历史帧
+    S2C_ReconnectFrames = 95;  // 服务端 → 客户端：历史权威帧分块下发
 }
 
 // ============================================
@@ -232,4 +236,39 @@ message LockstepFrameInputs {
 // 客户端 LockstepClient.OnAuthoritativeInputs 已容忍乱序/重复）
 message LockstepInputsNotify {
     repeated LockstepFrameInputs frames = 1;
+}
+
+// ============================================
+// 断线重连：服务器持有整局权威帧日志，重连端快进到当前帧后接回实时循环
+// ============================================
+
+// 重连询问（登录后发；服务器按玩家ID查是否有未结束的对局座位）
+message ReconnectReq {
+}
+
+// Main 场景就绪（客户端重建好玩家视图后发，服务器才开始灌历史）
+message ReconnectReady {
+}
+
+// 重连用的座位信息（比 LockstepSeat 多带昵称，避免重连端名牌只剩 ID）
+message LockstepSeatInfo {
+    string player_id = 1;
+    int32 seat = 2;
+    string player_name = 3;
+}
+
+// 对局基本信息（历史帧随后分块下发）
+message ReconnectInfoNotify {
+    string room_id = 1;
+    uint64 lockstep_seed = 2;
+    int32 tick_rate = 3;
+    int64 start_time = 4;           // 原始开赛时刻：接回实时循环后按这个墙钟对齐帧号
+    repeated LockstepSeatInfo seats = 5;
+    int64 latest_frame = 6;         // 服务器当前已封到的帧号（信息展示用）
+}
+
+// 历史帧分块。done=true 表示历史发完，之后到达的 S2C_LockstepInputs 才是新帧
+message ReconnectFramesNotify {
+    repeated LockstepFrameInputs frames = 1;
+    bool done = 2;
 }

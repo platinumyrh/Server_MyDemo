@@ -163,6 +163,38 @@ namespace Server_MyDemo.Services
         }
 
         /// <summary>
+        /// 重连回到进行中的对局：跳过 IsPlaying 限制（中途不能“新加人”，但原座位可以回来）。
+        /// 房间若已因空房销毁，就按原房间号重建；座位号由 lockstep 中继决定，这里只恢复房间成员关系。
+        /// </summary>
+        public Room? RejoinPlayingRoom(string playerId, string playerName, string roomId)
+        {
+            lock (_lock)
+            {
+                if (string.IsNullOrEmpty(roomId)) return null;
+
+                if (!_rooms.TryGetValue(roomId, out var room))
+                {
+                    room = new Room
+                    {
+                        RoomId = roomId,
+                        RoomName = $"Room_{roomId.Substring(0, Math.Min(6, roomId.Length))}",
+                        HostId = playerId,
+                        MaxPlayers = MAX_PLAYERS_PER_ROOM,
+                        IsPlaying = true
+                    };
+                    _rooms[roomId] = room;
+                }
+
+                if (!room.Players.Any(p => p.PlayerId == playerId))
+                    room.Players.Add(CreatePlayerInfo(playerId, playerName));
+
+                _playerRoom[playerId] = roomId;
+                Console.WriteLine($"[RoomManager] 🔌 玩家 [{playerId}] 重连回对局房间 [{roomId}]");
+                return room;
+            }
+        }
+
+        /// <summary>
         /// 离开房间
         /// </summary>
         public (bool Success, string? Message) LeaveRoom(string playerId, string roomId)

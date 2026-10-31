@@ -53,6 +53,7 @@ namespace Server_MyDemo
             new HeartbeatHandler(this).Register(_router);
             new RoomHandler(this).Register(_router);
             new LockstepHandler(this).Register(_router);
+            new ReconnectHandler(this).Register(_router);
 
             Console.WriteLine("[Server] 初始化完成");
             Console.WriteLine($"[Server] 端口: {SERVER_PORT}, 心跳超时: {HEARTBEAT_TIMEOUT_SEC}s");
@@ -174,6 +175,29 @@ namespace Server_MyDemo
                 if (endpoint != null)
                 {
                     _network.Send(endpoint, MsgID.S2CPlayerLeave, notify);
+                }
+            }
+        }
+
+        /// <summary>通知房间内其他玩家：掉线的人重连回来了（把计分板/房间成员补回来）</summary>
+        internal void NotifyPlayerJoin(string roomId, string playerId, string playerName)
+        {
+            var room = _rooms.GetRoom(roomId);
+            if (room == null) return;
+
+            var notify = new PlayerJoinNotify
+            {
+                Player = new PlayerInfo { PlayerId = playerId, PlayerName = playerName }
+            };
+
+            foreach (var player in room.Players)
+            {
+                if (player.PlayerId == playerId) continue;
+
+                var endpoint = _network.GetPlayerEndpoint(player.PlayerId);
+                if (endpoint != null)
+                {
+                    _network.Send(endpoint, MsgID.S2CPlayerJoin, notify);
                 }
             }
         }
