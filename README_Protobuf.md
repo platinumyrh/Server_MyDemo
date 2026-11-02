@@ -45,7 +45,7 @@ E:\unity\Protoc\protoc-21.1-win64\bin\protoc.exe ^
 
 ```bash
 # 复制到 Unity 项目
-copy "E:\unity\Server_MyDemo\GeneratedCodes\Messages.cs" "E:\unity\My Demo\Assets\Code\NetWork\ProtoBuf\GeneratedCodes\Messages.cs"
+copy "E:\unity\Server_MyDemo\GeneratedCodes\Messages.cs" "E:\unity\My Demo\Assets\Code\Network\ProtoBuf\GeneratedCodes\Messages.cs"
 ```
 
 ## ⚠️ 注意事项
@@ -67,9 +67,9 @@ copy "E:\unity\Server_MyDemo\GeneratedCodes\Messages.cs" "E:\unity\My Demo\Asset
 | 项目 | 路径 | 用途 |
 |------|------|------|
 | **服务端** | `E:\unity\Server_MyDemo\Protos\messages.proto` | 主定义文件 |
-| **客户端** | `E:\unity\My Demo\Assets\Code\NetWork\ProtoBuf\Protos\messages.proto` | 副本（用于参考） |
+| **客户端** | `E:\unity\My Demo\Assets\Code\Network\ProtoBuf\Protos\messages.proto` | 副本（用于参考） |
 | **服务端生成** | `E:\unity\Server_MyDemo\GeneratedCodes\Messages.cs` | 自动生成 |
-| **客户端使用** | `E:\unity\My Demo\Assets\Code\NetWork\ProtoBuf\GeneratedCodes\Messages.cs` | 从服务端复制 |
+| **客户端使用** | `E:\unity\My Demo\Assets\Code\Network\ProtoBuf\GeneratedCodes\Messages.cs` | 从服务端复制 |
 
 ## 🚀 快速开始
 
@@ -83,7 +83,7 @@ cd E:\unity\Server_MyDemo
 .\generate_proto.bat
 
 # 3. 复制到客户端
-copy GeneratedCodes\Messages.cs "E:\unity\My Demo\Assets\Code\NetWork\ProtoBuf\GeneratedCodes\"
+copy GeneratedCodes\Messages.cs "E:\unity\My Demo\Assets\Code\Network\ProtoBuf\GeneratedCodes\"
 
 # 4. 在 Unity 中刷新（Assets -> Reload）
 ```
@@ -154,15 +154,17 @@ message NewMessageResp {
 - `GetRoomListReq`, `RoomListResp`
 - `PlayerJoinNotify`, `PlayerLeaveNotify`
 
-### 帧同步 (30-31)
-- `PlayerInputReq`
-- `FrameStateResp`
-- `PlayerInput`
-- `GameEvent`
-
 ### 游戏控制 (50-51)
-- `GameStartNotify`
+- `GameStartNotify`（含 lockstep 种子/帧率/座位表）
 - `GameOverNotify`
+
+### 登录认证 (70-79)
+- `LoginReq`, `LoginResp`
+
+### lockstep 帧同步 (90-99)
+- `LockstepCommandReq`, `LockstepCommandData`（客户端上报的量化指令）
+- `LockstepInputsNotify`, `LockstepFrameInputs`, `LockstepPlayerCommand`（服务端封帧广播）
+- `LockstepSeat`（开局下发的座位分配）
 
 ---
 

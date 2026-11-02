@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using GameNetwork;  // 添加 GameNetwork 命名空间
 
-namespace Server_MyDemo.Server
+namespace Server_MyDemo.Services
 {
     /// <summary>
     /// 房间管理器
@@ -42,7 +42,7 @@ namespace Server_MyDemo.Server
         /// <summary>
         /// 创建房间
         /// </summary>
-        public (bool Success, string? RoomId, string? Message) CreateRoom(string hostId, string roomName = "", string password = "", string roomId = "")
+        public (bool Success, string? RoomId, string? Message) CreateRoom(string hostId, string hostName, string roomName = "", string password = "", string roomId = "")
         {
             lock (_lock)
             {
@@ -80,7 +80,7 @@ namespace Server_MyDemo.Server
                 };
 
                 // 房主加入房间
-                var playerInfo = CreatePlayerInfo(hostId);
+                var playerInfo = CreatePlayerInfo(hostId, hostName);
                 room.Players.Add(playerInfo);
 
                 // 保存数据
@@ -117,7 +117,7 @@ namespace Server_MyDemo.Server
         /// <summary>
         /// 加入房间
         /// </summary>
-        public (bool Success, RoomInfo? RoomInfo, string? Message) JoinRoom(string playerId, string roomId, string password = "")
+        public (bool Success, RoomInfo? RoomInfo, string? Message) JoinRoom(string playerId, string playerName, string roomId, string password = "")
         {
             lock (_lock)
             {
@@ -152,13 +152,45 @@ namespace Server_MyDemo.Server
                 }
 
                 // 加入房间
-                var playerInfo = CreatePlayerInfo(playerId);
+                var playerInfo = CreatePlayerInfo(playerId, playerName);
                 room.Players.Add(playerInfo);
                 _playerRoom[playerId] = roomId;
 
                 Console.WriteLine($"[RoomManager] 玩家 [{playerId}] 加入房间 [{roomId}]，当前人数: {room.Players.Count}/{room.MaxPlayers}");
 
                 return (true, ConvertToRoomInfo(room), "加入成功");
+            }
+        }
+
+        /// <summary>
+        /// 重连回到进行中的对局：跳过 IsPlaying 限制（中途不能“新加人”，但原座位可以回来）。
+        /// 房间若已因空房销毁，就按原房间号重建；座位号由 lockstep 中继决定，这里只恢复房间成员关系。
+        /// </summary>
+        public Room? RejoinPlayingRoom(string playerId, string playerName, string roomId)
+        {
+            lock (_lock)
+            {
+                if (string.IsNullOrEmpty(roomId)) return null;
+
+                if (!_rooms.TryGetValue(roomId, out var room))
+                {
+                    room = new Room
+                    {
+                        RoomId = roomId,
+                        RoomName = $"Room_{roomId.Substring(0, Math.Min(6, roomId.Length))}",
+                        HostId = playerId,
+                        MaxPlayers = MAX_PLAYERS_PER_ROOM,
+                        IsPlaying = true
+                    };
+                    _rooms[roomId] = room;
+                }
+
+                if (!room.Players.Any(p => p.PlayerId == playerId))
+                    room.Players.Add(CreatePlayerInfo(playerId, playerName));
+
+                _playerRoom[playerId] = roomId;
+                Console.WriteLine($"[RoomManager] 🔌 玩家 [{playerId}] 重连回对局房间 [{roomId}]");
+                return room;
             }
         }
 
@@ -264,14 +296,14 @@ namespace Server_MyDemo.Server
         }
 
         /// <summary>
-        /// 创建玩家信息
+        /// 创建玩家信息（playerName 为登录昵称，空则回退 ID）
         /// </summary>
-        private PlayerInfo CreatePlayerInfo(string playerId)
+        private PlayerInfo CreatePlayerInfo(string playerId, string playerName)
         {
             return new PlayerInfo
             {
                 PlayerId = playerId,
-                PlayerName = $"Player_{playerId}",  // ✅ 修复：使用字符串而不是数字
+                PlayerName = string.IsNullOrEmpty(playerName) ? $"Player_{playerId}" : playerName,
                 IsReady = false
             };
         }

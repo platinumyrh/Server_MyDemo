@@ -1,6 +1,4 @@
-﻿using Server_MyDemo.Server;
 using System;
-using GameNetwork;
 
 namespace Server_MyDemo
 {
@@ -11,15 +9,13 @@ namespace Server_MyDemo
             Console.Title = "My Demo Game Server";
             Console.WriteLine("========================================");
             Console.WriteLine("       My Demo Game Server v1.0");
-            Console.WriteLine("       UDP + Frame Sync + ProtoBuf");
+            Console.WriteLine("       UDP + Lockstep + ProtoBuf");
             Console.WriteLine("========================================");
             Console.WriteLine();
 
-            // 创建并启动游戏服务器
             GameServer server = new GameServer();
             server.Start();
 
-            // 主循环（保持控制台运行）
             Console.WriteLine("\n服务器已启动！按 'Q' 退出...");
             Console.WriteLine("可用命令：");
             Console.WriteLine("  Q - 退出服务器");
@@ -43,8 +39,7 @@ namespace Server_MyDemo
                     }
                 }
 
-                // 避免CPU占用过高
-                Thread.Sleep(100);
+                Thread.Sleep(100); // 避免CPU占用过高
             }
 
             Console.WriteLine("服务器已关闭。按任意键退出...");
